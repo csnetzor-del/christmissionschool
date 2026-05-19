@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admission Fee Receipt — Draft Preview</title>
+  <style>
+    @page { size: A4; margin: 14mm; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: Georgia, "Times New Roman", serif;
+      margin: 0;
+      color: #0b1b3e;
+      font-size: 11pt;
+      background: #eef2f7;
+    }
+    .draft-banner {
+      font-family: system-ui, sans-serif;
+      background: #d4a24c;
+      color: #0b1b3e;
+      text-align: center;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .rcpt-wrap { padding: 16px; }
+    .rcpt {
+      max-width: 180mm;
+      margin: 0 auto;
+      border: 2px solid #0b1b3e;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .rcpt__head {
+      background: linear-gradient(135deg, #0b1b3e, #1a3a6e);
+      color: #fff;
+      padding: 16px 20px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .rcpt__brand { flex: 1; min-width: 0; }
+    .rcpt__brand h1 { margin: 0; font-size: 14pt; letter-spacing: 0.06em; }
+    .rcpt__brand p { margin: 4px 0 0; font-size: 9pt; opacity: 0.9; }
+    .rcpt__stamp {
+      text-align: center;
+      background: #2e7d32;
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 11pt;
+      letter-spacing: 0.08em;
+      flex-shrink: 0;
+    }
+    .rcpt__title {
+      text-align: center;
+      padding: 12px;
+      background: #faf6ee;
+      border-bottom: 1px solid #e5dec9;
+      font-size: 12pt;
+      font-weight: bold;
+      margin: 0;
+    }
+    .rcpt__amt {
+      text-align: center;
+      padding: 20px;
+      background: #fff8e6;
+      border-bottom: 2px solid #d4a24c;
+    }
+    .rcpt__amt-label {
+      font-size: 9pt;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #5a6584;
+      margin: 0;
+    }
+    .rcpt__amt-val {
+      font-size: 28pt;
+      font-weight: bold;
+      color: #0b1b3e;
+      margin: 6px 0;
+    }
+    .rcpt__amt-words {
+      font-size: 9.5pt;
+      color: #5a6584;
+      font-style: italic;
+      margin: 0;
+    }
+    .rcpt__body { padding: 16px 20px; }
+    .rcpt__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 24px;
+      margin: 0;
+    }
+    .rcpt__row { font-size: 10pt; }
+    .rcpt__row dt {
+      font-size: 8pt;
+      text-transform: uppercase;
+      color: #5a6584;
+      letter-spacing: 0.04em;
+      margin: 0 0 2px;
+    }
+    .rcpt__row dd {
+      margin: 0;
+      font-weight: 600;
+      color: #0b1b3e;
+      word-break: break-word;
+    }
+    .rcpt__row--full { grid-column: 1 / -1; }
+    .rcpt__sig {
+      margin-top: 24px;
+      padding: 0 20px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 32px;
+      font-size: 9pt;
+    }
+    .rcpt__sig-emblem { flex: 0 0 auto; text-align: center; }
+    .rcpt__sig-emblem img {
+      width: 110px;
+      height: 110px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: #fff;
+      padding: 4px;
+      box-shadow: 0 2px 10px rgba(11, 27, 62, 0.12);
+    }
+    .rcpt__sig-emblem-cap {
+      margin: 8px 0 0;
+      font-size: 8pt;
+      color: #5a6584;
+      font-weight: 600;
+    }
+    .rcpt__sig-ack {
+      flex: 1;
+      max-width: 220px;
+      margin-left: auto;
+      border-top: 1px solid #0b1b3e;
+      padding-top: 8px;
+      text-align: center;
+      color: #0b1b3e;
+    }
+    .rcpt__foot {
+      padding: 14px 20px;
+      background: #f4efe3;
+      border-top: 3px solid #d4a24c;
+      font-size: 8pt;
+      color: #5a6584;
+      text-align: center;
+      line-height: 1.55;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      align-items: center;
+    }
+    .rcpt__foot strong {
+      font-size: 9pt;
+      color: #0b1b3e;
+    }
+    @media print {
+      .draft-banner { display: none !important; }
+      body { background: #fff; }
+      .rcpt-wrap { padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <p class="draft-banner">DRAFT PREVIEW — sample data only (not a real payment record)</p>
+
+  <div class="rcpt-wrap">
+    <article class="rcpt">
+      <header class="rcpt__head">
+        <div class="rcpt__brand">
+          <h1>CHRIST MISSION SCHOOL</h1>
+          <p>Mirganj, Purnea, Bihar – 854304</p>
+          <p>Excellence Through Education</p>
+        </div>
+        <span class="rcpt__stamp">PAID</span>
+      </header>
+
+      <p class="rcpt__title">Official Payment Receipt · Admission Application</p>
+
+      <div class="rcpt__amt">
+        <p class="rcpt__amt-label">Amount received</p>
+        <p class="rcpt__amt-val">₹150</p>
+        <p class="rcpt__amt-words">One hundred fifty rupees only · Non-refundable</p>
+      </div>
+
+      <div class="rcpt__body">
+        <dl class="rcpt__grid">
+          <div class="rcpt__row rcpt__row--full">
+            <dt>Transaction ID</dt>
+            <dd>TXN-ADM-911496472759</dd>
+          </div>
+          <div class="rcpt__row rcpt__row--full">
+            <dt>Application ID</dt>
+            <dd>CMS-1779114949290</dd>
+          </div>
+          <div class="rcpt__row">
+            <dt>Student name</dt>
+            <dd>—</dd>
+          </div>
+          <div class="rcpt__row">
+            <dt>Class applying for</dt>
+            <dd>—</dd>
+          </div>
+          <div class="rcpt__row">
+            <dt>Parent / guardian</dt>
+            <dd>—</dd>
+          </div>
+          <div class="rcpt__row">
+            <dt>Contact mobile</dt>
+            <dd>—</dd>
+          </div>
+          <div class="rcpt__row">
+            <dt>Payment method</dt>
+            <dd>UPI</dd>
+          </div>
+          <div class="rcpt__row">
+            <dt>Payment date &amp; time</dt>
+            <dd>18 May 2026, 08:06 pm</dd>
+          </div>
+          <div class="rcpt__row rcpt__row--full">
+            <dt>Purpose</dt>
+            <dd>Admission application processing fee (Session 2026–2027)</dd>
+          </div>
+          <div class="rcpt__row">
+            <dt>Receipt issued</dt>
+            <dd>18 May 2026, 08:06 pm</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="rcpt__sig">
+        <div class="rcpt__sig-emblem">
+          <img src="assets/cms-logo.png" alt="School logo" width="110" height="110" />
+          <p class="rcpt__sig-emblem-cap">Christ Mission School</p>
+        </div>
+        <span class="rcpt__sig-ack">Parent / guardian acknowledgement</span>
+      </div>
+    </article>
+
+    <footer class="rcpt__foot">
+      <span>This is a computer-generated receipt. No physical signature is required.</span>
+      <strong>Christ Mission School</strong>
+      <span>Admissions Portal · Mirganj, Purnea, Bihar 854304</span>
+    </footer>
+  </div>
+</body>
+</html>

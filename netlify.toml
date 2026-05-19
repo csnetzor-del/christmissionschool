@@ -1,0 +1,19 @@
+# Christ Mission School — Netlify (website) + Render (API backend)
+# 1) Deploy API: connect repo on Render.com, use render.yaml, note your URL
+# 2) Netlify env: BACKEND_URL = https://your-app.onrender.com
+# 3) Hostinger DNS for christmissionschool.com → Netlify (see project notes)
+
+[build]
+  publish = "."
+  command = "node scripts/netlify-write-redirects.js"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Optional: force HTTPS on your custom domain
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

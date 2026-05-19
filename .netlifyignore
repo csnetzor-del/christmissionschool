@@ -1,0 +1,12 @@
+node_modules/
+data/
+.env
+.env.*
+server.js
+admissions-api.js
+careers-api.js
+package.json
+package-lock.json
+render.yaml
+Procfile
+scripts/generate-admission-receipt-pdf.js

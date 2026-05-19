@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Application Fee Payment — Christ Mission School</title>
+  <meta name="description" content="Pay the Christ Mission School admission application fee of ₹150 securely via UPI, Card, Net Banking or Wallet." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="page--pay">
+  <header class="pay-topbar">
+    <div class="container pay-topbar__inner">
+      <a href="index.html" class="brand brand--compact" aria-label="Christ Mission School Home">
+        <span class="brand__logo" aria-hidden="true">
+          <img src="assets/cms-logo.png" alt="" width="120" height="120" decoding="async" />
+        </span>
+        <span class="brand__text">
+          <span class="brand__name">
+            <span>CHRIST</span>
+            <span>MISSION SCHOOL</span>
+          </span>
+          <span class="brand__sub">Purnea, Bihar</span>
+        </span>
+      </a>
+      <p class="pay-topbar__secure">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2l7 4v6c0 5-3.5 9-7 10-3.5-1-7-5-7-10V6l7-4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Secure Payment · 256-bit Encryption
+      </p>
+    </div>
+  </header>
+
+  <main class="pay-page">
+    <div class="container pay-grid">
+
+      <!-- LEFT: Payment options -->
+      <section class="pay-card pay-card--methods">
+        <header class="pay-card__head">
+          <h1 class="pay-card__title" id="payCardTitle">Pay Application Fee</h1>
+          <p class="pay-card__sub" id="payCardSub">Choose a payment method to complete your admission application.</p>
+        </header>
+
+        <div class="pay-methods" id="payMethods" role="tablist">
+          <button type="button" class="pay-method is-active" data-method="UPI" role="tab" aria-selected="true">
+            <span class="pay-method__icon">
+              <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><path d="M21.5 4l-9 24M19 14l-7 4 7 4" stroke="#0B1B3E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <span class="pay-method__label">UPI</span>
+            <span class="pay-method__hint">GPay · PhonePe · Paytm · BHIM</span>
+          </button>
+          <button type="button" class="pay-method" data-method="Card" role="tab" aria-selected="false">
+            <span class="pay-method__icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="#0B1B3E" stroke-width="1.8"/><path d="M2 10h20" stroke="#0B1B3E" stroke-width="1.8"/><path d="M6 15h4" stroke="#0B1B3E" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </span>
+            <span class="pay-method__label">Debit / Credit Card</span>
+            <span class="pay-method__hint">Visa · MasterCard · RuPay · AmEx</span>
+          </button>
+          <button type="button" class="pay-method" data-method="Net Banking" role="tab" aria-selected="false">
+            <span class="pay-method__icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 21h18M4 21V10m4 11V10m4 11V10m4 11V10m4 11V10M2 9l10-6 10 6" stroke="#0B1B3E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <span class="pay-method__label">Net Banking</span>
+            <span class="pay-method__hint">All major Indian banks</span>
+          </button>
+          <button type="button" class="pay-method" data-method="Wallet" role="tab" aria-selected="false">
+            <span class="pay-method__icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 7a2 2 0 0 1 2-2h14v4M3 7v10a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1V11a1 1 0 0 0-1-1H5a2 2 0 0 1-2-2z" stroke="#0B1B3E" stroke-width="1.8" stroke-linejoin="round"/><circle cx="17" cy="14" r="1.2" fill="#0B1B3E"/></svg>
+            </span>
+            <span class="pay-method__label">Wallet</span>
+            <span class="pay-method__hint">Paytm · Mobikwik · Amazon Pay</span>
+          </button>
+        </div>
+
+        <!-- UPI panel -->
+        <div class="pay-panel is-active" data-panel="UPI">
+          <p class="pay-panel__lead">Enter your UPI ID and we'll send a collect request to your UPI app.</p>
+          <div class="pay-field">
+            <label for="upi_id">UPI ID</label>
+            <input type="text" id="upi_id" placeholder="yourname@okhdfcbank / yourname@upi" />
+          </div>
+          <div class="pay-upi-apps" aria-hidden="true">
+            <span class="pay-upi-app pay-upi-app--gpay">G Pay</span>
+            <span class="pay-upi-app pay-upi-app--phonepe">PhonePe</span>
+            <span class="pay-upi-app pay-upi-app--paytm">Paytm</span>
+            <span class="pay-upi-app pay-upi-app--bhim">BHIM</span>
+          </div>
+        </div>
+
+        <!-- Card panel -->
+        <div class="pay-panel" data-panel="Card">
+          <div class="pay-field">
+            <label for="card_name">Cardholder Name</label>
+            <input type="text" id="card_name" placeholder="Name as on card" autocomplete="cc-name" />
+          </div>
+          <div class="pay-field">
+            <label for="card_number">Card Number</label>
+            <input type="text" id="card_number" inputmode="numeric" maxlength="19" placeholder="1234 5678 9012 3456" autocomplete="cc-number" />
+          </div>
+          <div class="pay-grid-2">
+            <div class="pay-field">
+              <label for="card_exp">Expiry (MM/YY)</label>
+              <input type="text" id="card_exp" inputmode="numeric" maxlength="5" placeholder="MM/YY" autocomplete="cc-exp" />
+            </div>
+            <div class="pay-field">
+              <label for="card_cvv">CVV</label>
+              <input type="password" id="card_cvv" inputmode="numeric" maxlength="4" placeholder="•••" autocomplete="cc-csc" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Net Banking panel -->
+        <div class="pay-panel" data-panel="Net Banking">
+          <div class="pay-field">
+            <label for="bank_select">Select Bank</label>
+            <select id="bank_select">
+              <option value="" disabled selected>Choose your bank</option>
+              <option>State Bank of India</option>
+              <option>HDFC Bank</option>
+              <option>ICICI Bank</option>
+              <option>Axis Bank</option>
+              <option>Punjab National Bank</option>
+              <option>Bank of Baroda</option>
+              <option>Canara Bank</option>
+              <option>Kotak Mahindra Bank</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <p class="pay-panel__lead">You'll be redirected to your bank's secure portal to authorise the payment.</p>
+        </div>
+
+        <!-- Wallet panel -->
+        <div class="pay-panel" data-panel="Wallet">
+          <div class="pay-field">
+            <label for="wallet_select">Choose Wallet</label>
+            <select id="wallet_select">
+              <option value="" disabled selected>Select wallet</option>
+              <option>Paytm Wallet</option>
+              <option>Amazon Pay</option>
+              <option>Mobikwik</option>
+              <option>Freecharge</option>
+              <option>JioMoney</option>
+            </select>
+          </div>
+          <div class="pay-field">
+            <label for="wallet_mobile">Wallet Mobile No.</label>
+            <input type="tel" id="wallet_mobile" inputmode="tel" maxlength="10" placeholder="Registered mobile" />
+          </div>
+        </div>
+
+        <button type="button" class="pay-btn pay-btn--primary" id="payNowBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="3" y="6" width="18" height="13" rx="2" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/>
+          </svg>
+          PAY ₹150 NOW
+        </button>
+
+        <p class="pay-trust">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2l7 4v6c0 5-3.5 9-7 10-3.5-1-7-5-7-10V6l7-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          Your payment details are securely encrypted and never stored on our servers.
+        </p>
+      </section>
+
+      <!-- RIGHT: Order summary -->
+      <aside class="pay-card pay-card--summary">
+        <header class="pay-card__head pay-card__head--navy">
+          <h2 class="pay-card__title">Order Summary</h2>
+        </header>
+
+        <dl class="pay-summary">
+          <div class="pay-summary__row pay-summary__row--head">
+            <dt>Applicant</dt>
+            <dd id="sumName">—</dd>
+          </div>
+          <div class="pay-summary__row">
+            <dt>Class Applying For</dt>
+            <dd id="sumClass">—</dd>
+          </div>
+          <div class="pay-summary__row">
+            <dt>Parent / Guardian</dt>
+            <dd id="sumParent">—</dd>
+          </div>
+          <div class="pay-summary__row">
+            <dt>Contact</dt>
+            <dd id="sumPhone">—</dd>
+          </div>
+          <div class="pay-summary__row">
+            <dt>Application ID</dt>
+            <dd id="sumId">—</dd>
+          </div>
+        </dl>
+
+        <div class="pay-amount">
+          <div class="pay-amount__line">
+            <span id="payFeeLineLabel">Admission Application Fee</span>
+            <span id="payFeeLineAmt">₹150.00</span>
+          </div>
+          <div class="pay-amount__line">
+            <span>Convenience Charges</span>
+            <span>₹0.00</span>
+          </div>
+          <div class="pay-amount__line">
+            <span>GST</span>
+            <span>₹0.00</span>
+          </div>
+          <div class="pay-amount__total">
+            <span>Amount Payable</span>
+            <span id="payTotalAmt">₹150.00</span>
+          </div>
+        </div>
+
+        <p class="pay-note" id="payFootNote">
+          This is a one-time, non-refundable application processing fee. Once payment is successful,
+          your admission application will be sent to the school office for review.
+        </p>
+
+        <a href="admissions.html" class="pay-back-link" id="payBackLink">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span id="payBackLinkText">Back to Application Form</span>
+        </a>
+      </aside>
+    </div>
+
+    <!-- Empty / expired state -->
+    <div class="pay-empty" id="payEmpty" hidden>
+      <div class="container">
+        <div class="pay-empty__box">
+          <h2 id="payEmptyTitle">No Pending Application Found</h2>
+          <p id="payEmptyText">It looks like you opened this page directly, or your session has expired. Please complete the admission form first.</p>
+          <a href="admissions.html" class="pay-btn pay-btn--primary pay-btn--inline" id="payEmptyBtn">Go to Admission Form</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Processing overlay -->
+    <div class="pay-overlay" id="payProcessing" hidden>
+      <div class="pay-overlay__box">
+        <div class="pay-spinner" aria-hidden="true"></div>
+        <h3>Processing your payment…</h3>
+        <p>Please don't close this window or press the back button.</p>
+      </div>
+    </div>
+
+    <!-- Success modal -->
+    <div class="pay-overlay" id="paySuccess" hidden>
+      <div class="pay-overlay__box pay-overlay__box--success">
+        <a href="index.html" class="pay-overlay__close" id="paySuccessClose" aria-label="Close and return to home page">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </a>
+        <div class="pay-success-icon" aria-hidden="true">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="11" stroke="#2E7D5A" stroke-width="1.6" fill="#F1F9F4"/>
+            <path d="M7 12l3.5 3.5L17 9" stroke="#2E7D5A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Payment Successful</h3>
+        <p id="paySuccessMsg">Your application has been received. A confirmation will be sent to your registered mobile number.</p>
+        <dl class="pay-receipt">
+          <div><dt>Transaction ID</dt><dd id="recRef">—</dd></div>
+          <div><dt>Amount Paid</dt><dd id="recAmountPaid">₹150.00</dd></div>
+          <div><dt>Payment Method</dt><dd id="recMethod">—</dd></div>
+          <div><dt>Application ID</dt><dd id="recAppId">—</dd></div>
+          <div><dt>Date &amp; Time</dt><dd id="recTime">—</dd></div>
+        </dl>
+        <div class="pay-success-actions">
+          <button type="button" class="pay-btn pay-btn--primary" id="downloadAdmissionPdf">Download PDF receipt</button>
+          <a href="index.html" class="pay-btn pay-btn--ghost" id="paySuccessHome">Close</a>
+          <p class="pay-receipt-hint">Your receipt will be saved to your device as a PDF file.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="pay-footer">
+    <div class="container pay-footer__inner">
+      <p>&copy; <span data-year>2026</span> Christ Mission School, Purnea, Bihar.</p>
+      <p><a href="admin-login.html">Admin Login</a></p>
+    </div>
+  </footer>
+
+  <script src="cms-emblem-data.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js" defer crossorigin="anonymous"></script>
+  <script src="admission-receipt.js" defer></script>
+  <script src="script.js" defer></script>
+</body>
+</html>

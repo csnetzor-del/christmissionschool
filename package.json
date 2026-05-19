@@ -1,0 +1,24 @@
+{
+  "name": "christ-mission-bihar",
+  "version": "1.0.0",
+  "description": "A premium, responsive, faith-based school website homepage built with vanilla HTML, CSS, and JavaScript — no build step required.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "axios": "^1.16.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}

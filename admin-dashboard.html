@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — Christ Mission School</title>
+  <meta name="robots" content="noindex,nofollow" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="page--admin">
+  <header class="admin-header">
+    <div class="container admin-header__inner">
+      <a href="index.html" class="brand brand--compact">
+        <span class="brand__logo" aria-hidden="true">
+          <img src="assets/cms-logo.png" alt="" width="120" height="120" decoding="async" />
+        </span>
+        <span class="brand__text">
+          <span class="brand__name">
+            <span>CHRIST</span>
+            <span>MISSION SCHOOL</span>
+          </span>
+          <span class="brand__sub">Admissions Console</span>
+        </span>
+      </a>
+      <div class="admin-header__right">
+        <span class="admin-user">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span id="adminWho">Administrator</span>
+        </span>
+        <button type="button" class="pay-btn pay-btn--ghost pay-btn--small" id="logoutBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4M14 17l5-5-5-5M19 12H7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Log out
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <div class="container">
+
+      <div class="admin-tabs" role="tablist">
+        <button type="button" class="admin-tab" data-tab="recycle" role="tab" aria-selected="false" id="recycleTabBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m1 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h12z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Recycle Bin
+          <span class="admin-tab__badge" id="recycleCount" hidden>0</span>
+        </button>
+        <button type="button" class="admin-tab is-active" data-tab="applications" role="tab" aria-selected="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 2v6h6" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          Admission Applications
+        </button>
+        <button type="button" class="admin-tab" data-tab="donations" role="tab" aria-selected="false">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          Donations
+        </button>
+        <button type="button" class="admin-tab" data-tab="careers" role="tab" aria-selected="false">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M22 11l-3 3-2-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Career Applications
+        </button>
+      </div>
+
+      <div class="admin-pane" data-pane="recycle" hidden>
+        <section class="admin-title-row">
+          <div>
+            <h1 class="admin-title">Recycle Bin</h1>
+            <p class="admin-sub">Items removed from Admissions, Donations, or Careers are stored here first. Restore them to the original list, or delete permanently.</p>
+          </div>
+          <div class="admin-actions">
+            <button type="button" class="pay-btn pay-btn--ghost pay-btn--small" id="recycleEmptyBtn" title="Permanently delete everything in the recycle bin">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m1 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h12z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Empty recycle bin
+            </button>
+          </div>
+        </section>
+
+        <section class="admin-filters admin-filters--recycle">
+          <select id="recycleFilterType" aria-label="Filter by type">
+            <option value="">All types</option>
+            <option value="admission_app">Admission applications</option>
+            <option value="admission_payment">Admission fee payments</option>
+            <option value="donation">Donations</option>
+            <option value="career_app">Career applications</option>
+            <option value="career_payment">Careers fee payments</option>
+          </select>
+        </section>
+
+        <section class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Summary</th>
+                <th>Deleted</th>
+                <th class="admin-th--actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="recycleTableBody"></tbody>
+          </table>
+          <div class="admin-empty" id="recycleEmpty" hidden>
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m1 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h12z" stroke="#0B1B3E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <h3>Recycle bin is empty</h3>
+            <p>When you delete a record from another admin tab, it will appear here so you can restore it or remove it for good.</p>
+          </div>
+        </section>
+      </div>
+
+      <div class="admin-pane" data-pane="applications">
+      <section class="admin-title-row">
+        <div>
+          <h1 class="admin-title">Admission Applications</h1>
+          <p class="admin-sub">View full application details, uploaded documents (photos, certificates, Aadhaar, etc.), and ₹150 fee payments. Open <code>https://www.christmissionschool.com/admin-dashboard.html</code> (not a local file).</p>
+        </div>
+        <div class="admin-actions">
+          <button type="button" class="pay-btn pay-btn--ghost pay-btn--small" id="seedBtn" title="Add a demo application to verify the dashboard works">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Add Sample
+          </button>
+          <button type="button" class="pay-btn pay-btn--ghost pay-btn--small" id="clearBtn" title="Delete all stored applications">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m1 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h12z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Clear All
+          </button>
+          <button type="button" class="pay-btn pay-btn--ghost pay-btn--small" id="exportBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Export CSV
+          </button>
+        </div>
+      </section>
+
+      <!-- Stat cards -->
+      <section class="admin-stats">
+        <article class="admin-stat">
+          <p class="admin-stat__label">Total Applications</p>
+          <p class="admin-stat__value" id="statTotal">0</p>
+        </article>
+        <article class="admin-stat admin-stat--gold">
+          <p class="admin-stat__label">Pending Review</p>
+          <p class="admin-stat__value" id="statPending">0</p>
+        </article>
+        <article class="admin-stat admin-stat--green">
+          <p class="admin-stat__label">Approved</p>
+          <p class="admin-stat__value" id="statApproved">0</p>
+        </article>
+        <article class="admin-stat admin-stat--navy">
+          <p class="admin-stat__label">Fee Collected</p>
+          <p class="admin-stat__value" id="statRevenue">₹0</p>
+        </article>
+      </section>
+
+      <section class="admin-careers-fees admin-admission-fees">
+        <div class="admin-careers-fees__head">
+          <div>
+            <h2 class="admin-careers-fees__title">Admission fee payments (₹150)</h2>
+            <p class="admin-careers-fees__sub">Each row is a successful application-fee checkout. Transaction numbers match the payment confirmation screen.</p>
+          </div>
+          <div class="admin-actions">
+            <button type="button" class="pay-btn pay-btn--ghost pay-btn--small" id="admPayClearBtn" title="Delete all stored admission fee payment records">
+              Clear payments
+            </button>
+            <button type="button" class="pay-btn pay-btn--ghost pay-btn--small" id="admPayExportBtn">
+              Export fees CSV
+            </button>
+          </div>
+        </div>
+        <div class="admin-table-wrap admin-table-wrap--nested">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Payment ID</th>
+                <th>Receipt / txn no.</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Paid at</th>
+                <th>Student</th>
+                <th>Application ID</th>
+                <th>Parent mobile</th>
+                <th class="admin-th--actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admPayTableBody"></tbody>
+          </table>
+          <div class="admin-empty admin-empty--compact" id="admPayEmpty" hidden>
+            <p>No admission fee payments yet. Payments appear after a parent completes checkout on the payment page.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Filters -->
+      <section class="admin-filters">
+        <div class="admin-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <input type="search" id="adminSearch" placeholder="Search by name, mobile, application ID…" />
+        </div>
+        <select id="filterStatus">
+          <option value="">All Statuses</option>
+          <option>Pending</option>
+          <option>Approved</option>
+          <option>Rejected</option>
+        </select>
+        <select id="filterPayment">
+          <option value="">All Payments</option>
+          <option>Paid</option>
+          <option>Pending</option>
+          <option>Failed</option>
+        </select>
+        <select id="filterClass">
+          <option value="">All Classes</option>
+        </select>
+      </section>
+
+      <!-- Table -->
+      <section class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>App ID</th>
+              <th>Student</th>
+              <th>Class</th>
+              <th>Parent</th>
+              <th>Contact</th>
+              <th>Submitted</th>
+              <th>Payment</th>
+              <th>Status</th>
+              <th class="admin-th--actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admTableBody"></tbody>
+        </table>
+
+        <div class="admin-empty" id="adminEmpty" hidden>
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="#0B1B3E" stroke-width="1.5"/><path d="M3 8h18M8 4v4M16 4v4" stroke="#0B1B3E" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <h3>No applications match your filters</h3>
+          <p>When applicants submit and pay the application fee, their full record will appear here.<br />Want to see how it looks? Click <strong>Add Sample</strong> above to insert a demo application.</p>
+        </div>
+      </section>
+      </div>
+
+      <!-- ============== DONATIONS PANE ============== -->
+      <div class="admin-pane" data-pane="donations" hidden>
+        <section class="admin-title-row">
+          <div>
+            <h1 class="admin-title">Donations</h1>
+            <p class="admin-sub">All contributions received through the Support Our Mission page.</p>
+          </div>
+          <div class="admin-actions">
+            <button type="button" class="pay-btn pay-btn--ghost pay-btn--small" id="donClearBtn" title="Delete all stored donations">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m1 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h12z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Clear All
+            </button>
+            <button type="button" class="pay-btn pay-btn--ghost pay-btn--small" id="donExportBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Export CSV
+            </button>
+          </div>
+        </section>
+
+        <section class="admin-stats">
+          <article class="admin-stat">
+            <p class="admin-stat__label">Total Donations</p>
+            <p class="admin-stat__value" id="donStatCount">0</p>
+          </article>
+          <article class="admin-stat admin-stat--gold">
+            <p class="admin-stat__label">Average Gift</p>
+            <p class="admin-stat__value" id="donStatAvg">₹0</p>
+          </article>
+          <article class="admin-stat admin-stat--green">
+            <p class="admin-stat__label">Highest Gift</p>
+            <p class="admin-stat__value" id="donStatMax">₹0</p>
+          </article>
+          <article class="admin-stat admin-stat--navy">
+            <p class="admin-stat__label">Total Raised</p>
+            <p class="admin-stat__value" id="donStatTotal">₹0</p>
+          </article>
+        </section>
+
+        <section class="admin-filters">
+          <div class="admin-search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <input type="search" id="donSearch" placeholder="Search by donor name, mobile, email…" />
+          </div>
+          <select id="donFilterPurpose">
+            <option value="">All Purposes</option>
+          </select>
+          <select id="donFilterMethod">
+            <option value="">All Methods</option>
+            <option>UPI</option>
+            <option>Card</option>
+            <option>Net Banking</option>
+            <option>Wallet</option>
+          </select>
+        </section>
+
+        <section class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Receipt No.</th>
+                <th>Donor</th>
+                <th>Amount</th>
+                <th>Purpose</th>
+                <th>Method</th>
+                <th>Transaction</th>
+                <th>Date</th>
+                <th class="admin-th--actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="donTableBody"></tbody>
+          </table>
+
+          <div class="admin-empty" id="donEmpty" hidden>
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="#0B1B3E" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            <h3>No donations yet</h3>
+            <p>When supporters give through the <strong>Support Our Mission</strong> page, their gifts appear here.</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============== CAREER APPLICATIONS PANE ============== -->
+      <div class="admin-pane" data-pane="careers" hidden>
+        <section class="admin-title-row">
+          <div>
+            <h1 class="admin-title">Career Applications</h1>
+            <p class="admin-sub">Online applications and ₹100 fee payments from the careers portal. Data is loaded from the school server when you run <code>node server.js</code> and open this dashboard at <code>http://localhost:3000</code>.</p>
+          </div>
+          <div class="admin-actions">
+            <button type="button" class="pay-btn pay-btn--ghost pay-btn--small" id="careersClearBtn" title="Delete all stored career applications">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m1 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h12z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Clear All
+            </button>
+            <button type="button" class="pay-btn pay-btn--ghost pay-btn--small" id="careersExportBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Export CSV
+            </button>
+          </div>
+        </section>
+
+        <section class="admin-careers-fees">
+          <div class="admin-careers-fees__head">
+            <div>
+              <h2 class="admin-careers-fees__title">Careers fee payments (₹100)</h2>
+              <p class="admin-careers-fees__sub">Each row is a successful processing-fee checkout. Receipt / transaction numbers match what applicants see on the payment confirmation screen.</p>
+            </div>
+            <div class="admin-actions">
+              <button type="button" class="pay-btn pay-btn--ghost pay-btn--small" id="careersPayClearBtn" title="Delete all stored careers fee payment records">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m1 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h12z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Clear payments
+              </button>
+              <button type="button" class="pay-btn pay-btn--ghost pay-btn--small" id="careersPayExportBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Export fees CSV
+              </button>
+            </div>
+          </div>
+          <div class="admin-table-wrap admin-table-wrap--nested">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>School payment ID</th>
+                  <th>Receipt / txn no.</th>
+                  <th>Amount</th>
+                  <th>Method</th>
+                  <th>Paid at</th>
+                  <th>Payer name</th>
+                  <th>Email</th>
+                  <th>Mobile</th>
+                  <th class="admin-th--actions">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="careersPayTableBody"></tbody>
+            </table>
+            <div class="admin-empty admin-empty--compact" id="careersPayEmpty" hidden>
+              <p>No careers fee payments recorded yet. Payments appear after a candidate completes checkout on the careers payment page.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="admin-stats">
+          <article class="admin-stat">
+            <p class="admin-stat__label">Total Applications</p>
+            <p class="admin-stat__value" id="careersStatTotal">0</p>
+          </article>
+          <article class="admin-stat admin-stat--gold">
+            <p class="admin-stat__label">New / Pending</p>
+            <p class="admin-stat__value" id="careersStatNew">0</p>
+          </article>
+          <article class="admin-stat admin-stat--green">
+            <p class="admin-stat__label">Shortlisted</p>
+            <p class="admin-stat__value" id="careersStatShort">0</p>
+          </article>
+          <article class="admin-stat admin-stat--navy">
+            <p class="admin-stat__label">Hired</p>
+            <p class="admin-stat__value" id="careersStatHired">0</p>
+          </article>
+        </section>
+
+        <section class="admin-filters">
+          <div class="admin-search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <input type="search" id="careersSearch" placeholder="Search by name, mobile, email, position…" />
+          </div>
+          <select id="careersFilterPosition">
+            <option value="">All Positions</option>
+          </select>
+          <select id="careersFilterStatus">
+            <option value="">All Statuses</option>
+            <option>New</option>
+            <option>Shortlisted</option>
+            <option>Rejected</option>
+            <option>Hired</option>
+          </select>
+        </section>
+
+        <section class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Application ref.</th>
+                <th>Applicant</th>
+                <th>Position</th>
+                <th>Fee receipt / txn</th>
+                <th>Experience</th>
+                <th>Contact</th>
+                <th>Submitted</th>
+                <th>Resume</th>
+                <th>Status</th>
+                <th class="admin-th--actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="careersTableBody"></tbody>
+          </table>
+
+          <div class="admin-empty" id="careersEmpty" hidden>
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="#0B1B3E" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="#0B1B3E" stroke-width="1.5"/></svg>
+            <h3>No career applications yet</h3>
+            <p>When candidates apply via the <strong>Join Our Mission</strong> / Careers page, their applications and resumes appear here.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- Application Detail Modal -->
+  <div class="adm-modal" id="appModal" hidden>
+    <div class="adm-modal__backdrop" data-close></div>
+    <div class="adm-modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <header class="adm-modal__head">
+        <div>
+          <h2 id="modalTitle">Application Details</h2>
+          <p id="modalSubtitle" class="adm-modal__sub">—</p>
+        </div>
+        <button type="button" class="adm-modal__close" data-close aria-label="Close">×</button>
+      </header>
+      <div class="adm-modal__body" id="modalBody"></div>
+      <footer class="adm-modal__foot">
+        <button type="button" class="pay-btn pay-btn--ghost" data-action="reject">Reject</button>
+        <button type="button" class="pay-btn pay-btn--primary" data-action="approve">Approve</button>
+      </footer>
+    </div>
+  </div>
+
+  <script src="script.js" defer></script>
+</body>
+</html>

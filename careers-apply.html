@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Careers Application Portal | Christ Mission School</title>
+  <meta name="description" content="Pay the ₹100 careers fee, view your receipt, and complete your Christ Mission School application in one place." />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: Inter, system-ui, sans-serif; background-color: #f8fafc; }
+    .careers-mission-hero {
+      position: relative;
+      display: block;
+      text-align: center;
+      color: #fff;
+      background: #e8eef5;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(11, 27, 62, 0.2);
+    }
+    .careers-mission-hero__img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: none;
+      object-fit: contain;
+      object-position: center top;
+      vertical-align: middle;
+    }
+    .careers-mission-hero__scrim {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 42%;
+      min-height: 9rem;
+      background: linear-gradient(
+        180deg,
+        rgba(11, 27, 62, 0) 0%,
+        rgba(11, 27, 62, 0.55) 55%,
+        rgba(11, 27, 62, 0.88) 100%
+      );
+      pointer-events: none;
+    }
+    .careers-mission-hero__inner {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1;
+      padding: 1.25rem 1.5rem 1.75rem;
+    }
+    .careers-mission-hero__title {
+      color: #fff;
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
+    }
+    .careers-mission-hero__tagline {
+      color: rgba(255, 255, 255, 0.95);
+      text-shadow: 0 1px 12px rgba(0, 0, 0, 0.3);
+    }
+    .careers-mission-hero__badge {
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      color: #fff;
+      backdrop-filter: blur(6px);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .step-inactive { opacity: 0.5; filter: grayscale(1); }
+    .form-section { display: none; }
+    .form-section.active { display: block; animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .custom-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
+    /* Override global careers-upload flex layout from styles.css */
+    .page--careers-portal .careers-upload__drop.careers-resume-zone {
+      display: block !important;
+      border: none !important;
+      padding: 0 !important;
+      background: transparent !important;
+      transform: none !important;
+      min-height: 10.5rem;
+      text-align: center;
+    }
+    .page--careers-portal .careers-resume-zone__input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .page--careers-portal .careers-resume-zone__label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      padding: 0.55rem 1.15rem;
+      border-radius: 0.5rem;
+      background: #2563eb;
+      color: #fff;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(37, 99, 235, 0.35);
+    }
+    .page--careers-portal .careers-resume-zone__label:hover {
+      background: #1d4ed8;
+    }
+    .page--careers-portal #resumeUploadBox.is-ready {
+      border-color: #22c55e !important;
+      background: #f0fdf4 !important;
+    }
+    .page--careers-portal .careers-resume-zone.is-dragover {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+    #careersPaySection[hidden],
+    #careersPaidWorkspace[hidden] { display: none !important; }
+  /* Overlays must not block typing when dismissed ([hidden] beats .pay-overlay { display:flex }) */
+    .pay-overlay[hidden],
+    #careersSuccess[hidden],
+    #careersPayProcessing[hidden] {
+      display: none !important;
+      pointer-events: none !important;
+      visibility: hidden !important;
+    }
+    #careersForm input:not([type="radio"]):not([type="checkbox"]),
+    #careersForm select,
+    #careersForm textarea,
+    #careersForm .careers-resume-zone__label {
+      pointer-events: auto;
+    }
+    .careers-upload__zone.is-dragover {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+    .careers-receipt-panel {
+      background: #fff;
+      border: 1px solid #e5dec9;
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 8px 24px rgba(11, 27, 62, 0.08);
+    }
+    .careers-receipt-panel__head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .careers-receipt-panel__head h2 {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0b1b3e;
+    }
+    .careers-paid-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      background: #e8f5e9;
+      color: #2e7d32;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .careers-combined-intro {
+      margin: 0 0 1.25rem;
+      color: #5a6584;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+    .page--careers-portal .pay-page { padding-top: 1.5rem; padding-bottom: 2rem; }
+    .careers-portal-pay .pay-grid { max-width: 100%; }
+    @media (min-width: 960px) {
+      .careers-combined-stack {
+        display: grid;
+        grid-template-columns: minmax(280px, 340px) 1fr;
+        gap: 1.5rem;
+        align-items: start;
+      }
+      .careers-receipt-panel { position: sticky; top: 1rem; }
+    }
+    .careers-receipt-emblem-wrap { text-align: center; margin-bottom: 1rem; }
+    .careers-receipt-emblem-wrap img {
+      width: 88px;
+      height: 88px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: #fff;
+      padding: 4px;
+      box-shadow: 0 4px 12px rgba(11, 27, 62, 0.12);
+    }
+    .careers-receipt-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .careers-receipt-actions .pay-btn {
+      width: 100%;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+    .careers-receipt-hint {
+      margin: 0.5rem 0 0;
+      font-size: 0.75rem;
+      color: #5a6584;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body class="text-slate-800 page--careers-portal">
+  <header class="careers-mission-hero" role="banner" aria-label="Join Our Mission">
+    <img
+      class="careers-mission-hero__img"
+      src="assets/careers-join-mission-hero.png"
+      alt="Christ Mission School campus — CHRIST MISSION SCHOOL building entrance"
+      width="1920"
+      height="1080"
+      decoding="async"
+      fetchpriority="high"
+    />
+    <div class="careers-mission-hero__scrim" aria-hidden="true"></div>
+    <div class="careers-mission-hero__inner max-w-4xl mx-auto">
+      <h1 class="careers-mission-hero__title text-3xl md:text-4xl font-bold mb-2">Join Our Mission</h1>
+      <p class="careers-mission-hero__tagline text-lg italic">Empowering Minds • Nurturing Faith • Shaping Futures</p>
+      <div class="mt-4 flex justify-center gap-3 flex-wrap">
+        <span class="careers-mission-hero__badge px-4 py-1 rounded-full text-sm">English Medium · Purnea</span>
+      </div>
+    </div>
+  </header>
+
+
+  <section id="careersPaySection" class="pay-page careers-portal-pay" aria-label="Careers application fee">
+    <div class="max-w-6xl mx-auto px-4 container pay-grid">
+      <section class="pay-card pay-card--methods">
+        <header class="pay-card__head">
+          <h2 class="pay-card__title">Careers Application Fee</h2>
+          <p class="pay-card__sub">Pay the <strong>₹100</strong> fee once per application (online or offline). After payment, your receipt and form appear on this page.</p>
+        </header>
+        <div class="pay-applicant-grid">
+          <div class="pay-field"><label for="careers_pay_name">Full name <span class="req">*</span></label><input type="text" id="careers_pay_name" autocomplete="name" /></div>
+          <div class="pay-field"><label for="careers_pay_email">Email <span class="req">*</span></label><input type="email" id="careers_pay_email" autocomplete="email" /></div>
+          <div class="pay-field"><label for="careers_pay_phone">Mobile <span class="req">*</span></label><input type="tel" id="careers_pay_phone" inputmode="numeric" maxlength="10" autocomplete="tel" /></div>
+        </div>
+        <p class="pay-panel__lead" id="careersGatewayNote" hidden></p>
+        <div class="pay-methods" id="careersPayMethods" role="tablist">
+          <button type="button" class="pay-method is-active" data-method="UPI" role="tab" aria-selected="true"><span class="pay-method__label">UPI</span></button>
+          <button type="button" class="pay-method" data-method="Card" role="tab" aria-selected="false"><span class="pay-method__label">Card</span></button>
+          <button type="button" class="pay-method" data-method="Net Banking" role="tab" aria-selected="false"><span class="pay-method__label">Net Banking</span></button>
+          <button type="button" class="pay-method" data-method="Wallet" role="tab" aria-selected="false"><span class="pay-method__label">Wallet</span></button>
+        </div>
+        <div class="pay-panel is-active" data-panel="UPI"><div class="pay-field"><label for="careers_upi_id">UPI ID</label><input type="text" id="careers_upi_id" /></div></div>
+        <div class="pay-panel" data-panel="Card">
+          <div class="pay-field"><label for="careers_card_name">Cardholder</label><input type="text" id="careers_card_name" /></div>
+          <div class="pay-field"><label for="careers_card_number">Card number</label><input type="text" id="careers_card_number" inputmode="numeric" maxlength="19" /></div>
+          <div class="pay-grid-2">
+            <div class="pay-field"><label for="careers_card_exp">Expiry</label><input type="text" id="careers_card_exp" maxlength="5" placeholder="MM/YY" /></div>
+            <div class="pay-field"><label for="careers_card_cvv">CVV</label><input type="password" id="careers_card_cvv" maxlength="4" /></div>
+          </div>
+        </div>
+        <div class="pay-panel" data-panel="Net Banking"><div class="pay-field"><label for="careers_bank_select">Bank</label><select id="careers_bank_select"><option value="" disabled selected>Choose bank</option><option>State Bank of India</option><option>HDFC Bank</option><option>Other</option></select></div></div>
+        <div class="pay-panel" data-panel="Wallet">
+          <div class="pay-field"><label for="careers_wallet_select">Wallet</label><select id="careers_wallet_select"><option value="" disabled selected>Select</option><option>Paytm</option></select></div>
+          <div class="pay-field"><label for="careers_wallet_mobile">Mobile</label><input type="tel" id="careers_wallet_mobile" maxlength="10" /></div>
+        </div>
+        <button type="button" class="pay-btn pay-btn--primary" id="careersPayNowBtn">PAY ₹100 NOW</button>
+      </section>
+      <aside class="pay-card pay-card--summary">
+        <header class="pay-card__head pay-card__head--navy"><h2 class="pay-card__title">Fee Summary</h2></header>
+        <dl class="pay-summary">
+          <div class="pay-summary__row"><dt>Applicant</dt><dd id="careersSumName">—</dd></div>
+          <div class="pay-summary__row"><dt>Email</dt><dd id="careersSumEmail">—</dd></div>
+          <div class="pay-summary__row"><dt>Mobile</dt><dd id="careersSumPhone">—</dd></div>
+        </dl>
+        <div class="pay-amount"><div class="pay-amount__total"><span>Amount payable</span><span>₹100.00</span></div></div>
+      </aside>
+    </div>
+    <div class="pay-overlay" id="careersPayProcessing" hidden><div class="pay-overlay__box"><div class="pay-spinner" aria-hidden="true"></div><h3>Processing payment…</h3></div></div>
+  </section>
+
+  <section id="careersPaidWorkspace" hidden aria-label="Payment receipt and application form">
+    <div class="max-w-6xl mx-auto px-4 pt-2">
+      <p class="careers-combined-intro">Your fee is confirmed. Your payment receipt and application form are shown together below. <strong>One ₹100 payment = one application</strong> (online submit <em>or</em> offline PDF download — not both).</p>
+      <div class="careers-combined-stack">
+        <article class="careers-receipt-panel">
+          <div class="careers-receipt-panel__head"><h2>Payment receipt</h2><span class="careers-paid-badge">Paid</span></div>
+          <div class="careers-receipt-emblem-wrap">
+            <img id="careersRecEmblem" src="assets/cms-school-emblem.jpg?v=3" alt="Christ Mission School emblem" width="88" height="88" />
+          </div>
+          <dl class="pay-receipt">
+            <div><dt>Transaction ID</dt><dd id="careersRecRef">—</dd></div>
+            <div><dt>Applicant</dt><dd id="careersRecName">—</dd></div>
+            <div><dt>Email</dt><dd id="careersRecEmail">—</dd></div>
+            <div><dt>Mobile</dt><dd id="careersRecPhone">—</dd></div>
+            <div><dt>Amount</dt><dd>₹100.00</dd></div>
+            <div><dt>Method</dt><dd id="careersRecMethod">—</dd></div>
+            <div><dt>Date</dt><dd id="careersRecTime">—</dd></div>
+          </dl>
+          <div class="careers-receipt-actions">
+            <button type="button" class="pay-btn pay-btn--primary" id="careersSavePdfReceipt" style="background:#0b1b3e;color:#fff;border:none;">Download receipt (PDF)</button>
+            <p class="careers-receipt-hint">Choose <strong>Save as PDF</strong> in the print dialog. Allow pop-ups if nothing opens.</p>
+          </div>
+        </article>
+        <div class="careers-combined-form">
+  <main class="max-w-none px-0 pb-20">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+      <button type="button" onclick="switchMode('online')" id="btn-online" class="glass-card p-7 rounded-2xl text-left border-2 border-blue-500 transition-all hover:scale-[1.01] custom-shadow group">
+        <div class="flex items-center gap-4 mb-3">
+          <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+            <i class="fas fa-laptop-code text-xl"></i>
+          </div>
+          <h2 class="text-xl font-bold">Apply Online</h2>
+        </div>
+        <p class="text-slate-600 text-sm leading-relaxed">Multi-step form: personal details, role &amp; qualifications, experience, then résumé upload.</p>
+      </button>
+      <button type="button" onclick="switchMode('offline')" id="btn-offline" class="glass-card p-7 rounded-2xl text-left border-2 border-transparent transition-all hover:scale-[1.01] custom-shadow group">
+        <div class="flex items-center gap-4 mb-3">
+          <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 group-hover:bg-slate-800 group-hover:text-white transition-colors">
+            <i class="fas fa-file-pdf text-xl"></i>
+          </div>
+          <h2 class="text-xl font-bold text-slate-800">Apply Offline</h2>
+        </div>
+        <p class="text-slate-600 text-sm leading-relaxed">Generate the application form, print it, fill any missing fields in ink, and submit at the Mirganj campus office.</p>
+      </button>
+    </div>
+
+    <section id="view-offline" class="hidden glass-card p-10 rounded-3xl custom-shadow text-center">
+      <div class="max-w-2xl mx-auto">
+        <i class="fas fa-print text-5xl text-blue-600 mb-5"></i>
+        <h2 class="text-2xl font-bold mb-3">Official application form</h2>
+        <p class="text-slate-600 mb-8 leading-relaxed">
+          Generate your <strong>auto-filled</strong> application from the portal (ref. <strong>CMS-APP-2026</strong>). Print, sign, and submit at campus with your documents.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10 text-left">
+          <div class="p-4 bg-blue-50 rounded-xl">
+            <span class="font-bold text-blue-600 text-lg block mb-2">01</span>
+            <p class="text-sm text-slate-700">Download the application form.</p>
+          </div>
+          <div class="p-4 bg-blue-50 rounded-xl">
+            <span class="font-bold text-blue-600 text-lg block mb-2">02</span>
+            <p class="text-sm text-slate-700">Fill in black or blue ink; attach attested copies as instructed on the form.</p>
+          </div>
+          <div class="p-4 bg-blue-50 rounded-xl">
+            <span class="font-bold text-blue-600 text-lg block mb-2">03</span>
+            <p class="text-sm text-slate-700">Submit at Christ Mission School, Mirganj, Purnea, during office hours.</p>
+          </div>
+        </div>
+        <div class="flex flex-wrap justify-center gap-3 mb-4">
+          <button type="button" id="careersDownloadFilledBtn" class="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+            <i class="fas fa-download"></i> Download Application (PDF)
+          </button>
+        </div>
+        <p class="text-xs text-slate-500 mt-4">Opens your form in a new tab — click <strong>Download Application (PDF)</strong>, then choose <strong>Save as PDF</strong>. Use <a href="http://localhost:3000/careers-apply.html" class="text-blue-600 underline">localhost:3000</a> if the page won’t load.</p>
+      </div>
+    </section>
+
+    <section id="view-online" class="glass-card rounded-3xl custom-shadow overflow-hidden border border-slate-100">
+      <div class="bg-slate-100 flex p-3 md:p-4 border-b border-slate-200">
+        <div id="step-ind-1" class="flex-1 flex flex-col items-center gap-1">
+          <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold">1</div>
+          <span class="text-[10px] md:text-xs font-semibold text-center">Personal</span>
+        </div>
+        <div id="step-ind-2" class="flex-1 flex flex-col items-center gap-1 step-inactive">
+          <div class="w-8 h-8 rounded-full bg-slate-300 text-white flex items-center justify-center text-sm font-bold">2</div>
+          <span class="text-[10px] md:text-xs font-semibold text-center">Role &amp; education</span>
+        </div>
+        <div id="step-ind-3" class="flex-1 flex flex-col items-center gap-1 step-inactive">
+          <div class="w-8 h-8 rounded-full bg-slate-300 text-white flex items-center justify-center text-sm font-bold">3</div>
+          <span class="text-[10px] md:text-xs font-semibold text-center">Experience</span>
+        </div>
+        <div id="step-ind-4" class="flex-1 flex flex-col items-center gap-1 step-inactive">
+          <div class="w-8 h-8 rounded-full bg-slate-300 text-white flex items-center justify-center text-sm font-bold">4</div>
+          <span class="text-[10px] md:text-xs font-semibold text-center">Upload</span>
+        </div>
+      </div>
+
+      <form id="careersForm" class="p-6 md:p-10" novalidate>
+        <div class="form-section active" id="step-1">
+          <h3 class="text-xl font-bold mb-5 flex items-center gap-2">
+            <i class="fas fa-user-circle text-blue-600"></i> Personal information
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label class="text-sm font-semibold text-slate-600" for="c_name">Full name <span class="text-red-500">*</span></label>
+              <input type="text" name="c_name" id="c_name" required class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="In block letters" />
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-600" for="c_dob">Date of birth <span class="text-red-500">*</span></label>
+              <input type="date" name="c_dob" id="c_dob" required class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
+            </div>
+            <div>
+              <span class="text-sm font-semibold text-slate-600">Gender <span class="text-red-500">*</span></span>
+              <div class="mt-2 flex flex-wrap gap-4 text-sm">
+                <label class="inline-flex items-center gap-2 cursor-pointer"><input type="radio" name="c_gender" value="Male" required class="rounded-full text-blue-600" /> Male</label>
+                <label class="inline-flex items-center gap-2 cursor-pointer"><input type="radio" name="c_gender" value="Female" class="rounded-full text-blue-600" /> Female</label>
+                <label class="inline-flex items-center gap-2 cursor-pointer"><input type="radio" name="c_gender" value="Other" class="rounded-full text-blue-600" /> Other</label>
+              </div>
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-600" for="c_father">Father&rsquo;s / husband&rsquo;s name</label>
+              <input type="text" name="c_father" id="c_father" class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="In block letters" />
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-600" for="c_nationality">Nationality</label>
+              <input type="text" name="c_nationality" id="c_nationality" value="Indian" class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-600" for="c_marital">Marital status</label>
+              <select name="c_marital" id="c_marital" class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                <option value="">Select</option>
+                <option>Single</option>
+                <option>Married</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-600" for="c_mobile">Mobile <span class="text-red-500">*</span></label>
+              <input type="tel" name="c_mobile" id="c_mobile" inputmode="numeric" maxlength="10" required class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="10-digit number" />
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-600" for="c_email">Email <span class="text-red-500">*</span></label>
+              <input type="email" name="c_email" id="c_email" required class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="you@example.com" />
+            </div>
+            <div class="md:col-span-2">
+              <label class="text-sm font-semibold text-slate-600" for="c_address">Current address <span class="text-red-500">*</span></label>
+              <textarea name="c_address" id="c_address" rows="3" required class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="House, street, city, state, PIN"></textarea>
+            </div>
+            <div class="md:col-span-2">
+              <label class="text-sm font-semibold text-slate-600" for="c_perm_address">Permanent address (if different)</label>
+              <textarea name="c_perm_address" id="c_perm_address" rows="2" class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Leave blank if same as current address"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section" id="step-2">
+          <h3 class="text-xl font-bold mb-5 flex items-center gap-2">
+            <i class="fas fa-briefcase text-blue-600"></i> Role &amp; qualifications
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label class="text-sm font-semibold text-slate-600" for="c_position">Position applied for <span class="text-red-500">*</span></label>
+              <select name="c_position" id="c_position" required class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white" onchange="toggleTeacherFields()">
+                <option value="">Choose a role</option>
+                <option>Subject Teacher</option>
+                <option>Primary Class Teacher</option>
+                <option>Sports &amp; Activities Coordinator</option>
+                <option>Administrative Assistant</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-600" for="c_qual">Highest qualification <span class="text-red-500">*</span></label>
+              <input type="text" name="c_qual" id="c_qual" required class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. M.Sc., B.Ed." />
+            </div>
+            <div id="teacherFields" class="md:col-span-2 hidden grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label class="text-sm font-semibold text-slate-600" for="c_subject">Subject / specialisation</label>
+                <input type="text" name="c_subject" id="c_subject" class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. Mathematics, English" />
+              </div>
+              <div>
+                <label class="text-sm font-semibold text-slate-600" for="c_bed">B.Ed. / D.El.Ed status</label>
+                <select name="c_bed" id="c_bed" class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                  <option value="">Select</option>
+                  <option>Completed</option>
+                  <option>Pursuing</option>
+                  <option>Not Applicable</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-600" for="c_grade">Preferred grade level</label>
+              <select name="c_grade" id="c_grade" class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                <option value="">Select</option>
+                <option>Nursery – KG</option>
+                <option>Class 1 – 5 (Primary)</option>
+                <option>Class 6 – 8 (Middle)</option>
+                <option>Any</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-600" for="c_join_date">Earliest joining date</label>
+              <input type="date" name="c_join_date" id="c_join_date" class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-600" for="c_university">University / institution</label>
+              <input type="text" name="c_university" id="c_university" class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-600" for="c_year">Year of passing</label>
+              <input type="number" name="c_year" id="c_year" min="1980" max="2026" placeholder="YYYY" class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section" id="step-3">
+          <h3 class="text-xl font-bold mb-5 flex items-center gap-2">
+            <i class="fas fa-history text-blue-600"></i> Experience &amp; skills
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label class="text-sm font-semibold text-slate-600" for="c_exp_years">Total years of experience</label>
+              <input type="number" name="c_exp_years" id="c_exp_years" min="0" max="50" step="0.5" class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="0 if fresher" />
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-600" for="c_salary">Expected monthly salary (₹)</label>
+              <input type="number" name="c_salary" id="c_salary" min="0" step="500" class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. 25000" />
+            </div>
+            <div class="md:col-span-2">
+              <label class="text-sm font-semibold text-slate-600" for="c_exp_current">Current / last organisation</label>
+              <input type="text" name="c_exp_current" id="c_exp_current" class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-600" for="c_exp_role">Current / last designation</label>
+              <input type="text" name="c_exp_role" id="c_exp_role" class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-600" for="c_skills">Key skills</label>
+              <input type="text" name="c_skills" id="c_skills" class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
+            </div>
+            <div class="md:col-span-2">
+              <label class="text-sm font-semibold text-slate-600" for="c_languages">Languages you can teach in</label>
+              <input type="text" name="c_languages" id="c_languages" class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. English, Hindi" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section" id="step-4">
+          <h3 class="text-xl font-bold mb-5 flex items-center gap-2">
+            <i class="fas fa-cloud-upload-alt text-blue-600"></i> Résumé &amp; motivation
+          </h3>
+          <div class="space-y-5">
+            <div class="border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center bg-slate-50 hover:bg-slate-100 transition-colors careers-upload" id="resumeUploadBox">
+              <div class="careers-upload__drop careers-resume-zone" id="resumeDrop">
+                <input
+                  type="file"
+                  id="c_resume"
+                  name="c_resume"
+                  required
+                  class="careers-resume-zone__input"
+                  accept=".pdf,.doc,.docx,application/pdf,application/x-pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                />
+                <i class="fas fa-file-invoice text-3xl text-slate-400 mb-2" aria-hidden="true"></i>
+                <p class="font-semibold text-slate-800">Upload résumé / CV <span class="text-red-500">*</span></p>
+                <p class="text-xs text-slate-500 mb-1">PDF, DOC or DOCX · up to 5 MB</p>
+                <p class="text-xs text-slate-400 mb-2">or drag and drop your file here</p>
+                <label for="c_resume" class="careers-resume-zone__label" id="resumeBrowseBtn">
+                  <i class="fas fa-folder-open" aria-hidden="true"></i> Choose PDF / document
+                </label>
+              </div>
+              <div class="careers-upload__chosen mt-3 flex items-center justify-center gap-2 text-sm text-slate-700" id="resumeChosen" hidden>
+                <i class="fas fa-paperclip text-blue-600"></i>
+                <span id="resumeChosenName">—</span>
+                <span id="resumeChosenSize" class="text-slate-500">—</span>
+                <button type="button" class="text-red-600 font-bold px-2" id="resumeRemove" aria-label="Remove résumé">×</button>
+              </div>
+              <p class="adm-error text-red-600 text-sm mt-2" id="resumeError" hidden></p>
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-600" for="c_cover">Why do you want to join CMS? <span class="text-red-500">*</span></label>
+              <textarea name="c_cover" id="c_cover" rows="4" required class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Your motivation and teaching heart…"></textarea>
+            </div>
+            <label class="flex gap-3 items-start cursor-pointer text-sm text-slate-600">
+              <input type="checkbox" id="c_consent" required class="mt-1 w-4 h-4 rounded text-blue-600 shrink-0" />
+              <span>I declare that the information provided is true to the best of my knowledge. I understand that false information may disqualify my application.</span>
+            </label>
+            <div class="pt-4 border-t border-slate-200">
+              <p class="text-sm font-semibold text-slate-700 mb-3">References (not relatives)</p>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label class="text-xs font-semibold text-slate-500" for="c_ref1_name">Reference 1 — name</label>
+                  <input type="text" name="c_ref1_name" id="c_ref1_name" class="mt-1 w-full p-2.5 border border-slate-200 rounded-lg text-sm" />
+                </div>
+                <div>
+                  <label class="text-xs font-semibold text-slate-500" for="c_ref1_relation">Relationship</label>
+                  <input type="text" name="c_ref1_relation" id="c_ref1_relation" class="mt-1 w-full p-2.5 border border-slate-200 rounded-lg text-sm" placeholder="e.g. Former principal" />
+                </div>
+                <div>
+                  <label class="text-xs font-semibold text-slate-500" for="c_ref1_phone">Contact number</label>
+                  <input type="tel" name="c_ref1_phone" id="c_ref1_phone" inputmode="numeric" maxlength="10" class="mt-1 w-full p-2.5 border border-slate-200 rounded-lg text-sm" />
+                </div>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label class="text-xs font-semibold text-slate-500" for="c_ref2_name">Reference 2 — name</label>
+                  <input type="text" name="c_ref2_name" id="c_ref2_name" class="mt-1 w-full p-2.5 border border-slate-200 rounded-lg text-sm" />
+                </div>
+                <div>
+                  <label class="text-xs font-semibold text-slate-500" for="c_ref2_relation">Relationship</label>
+                  <input type="text" name="c_ref2_relation" id="c_ref2_relation" class="mt-1 w-full p-2.5 border border-slate-200 rounded-lg text-sm" />
+                </div>
+                <div>
+                  <label class="text-xs font-semibold text-slate-500" for="c_ref2_phone">Contact number</label>
+                  <input type="tel" name="c_ref2_phone" id="c_ref2_phone" inputmode="numeric" maxlength="10" class="mt-1 w-full p-2.5 border border-slate-200 rounded-lg text-sm" />
+                </div>
+              </div>
+            </div>
+            <div class="pt-4">
+              <button type="button" id="careersPreviewFormBtn" class="inline-flex items-center gap-2 text-sm font-semibold text-blue-700 hover:text-blue-900">
+                <i class="fas fa-file-pdf"></i> Preview / generate application form
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-10 flex justify-between items-center gap-4 flex-wrap">
+          <button type="button" id="prevBtn" onclick="changeStep(-1)" class="hidden px-5 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 border border-transparent">
+            <i class="fas fa-arrow-left mr-2"></i> Previous
+          </button>
+          <div class="ml-auto flex gap-3">
+            <button type="button" id="nextBtn" onclick="changeStep(1)" class="bg-blue-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all text-sm md:text-base">
+              Next <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+            <button type="submit" id="careersSubmitBtn" class="hidden bg-green-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-green-200 hover:bg-green-700 transition-all text-sm md:text-base">
+              Submit application <i class="fas fa-check-circle ml-2"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </section>
+  </main>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="pay-overlay careers-success" id="careersSuccess" hidden>
+    <div class="pay-overlay__box pay-overlay__box--success max-w-md w-full">
+      <div class="careers-success__icon mb-3 flex justify-center" aria-hidden="true">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="32" r="30" fill="#E8F5E9" stroke="#2E7D32" stroke-width="2"/>
+          <path d="M19 33l9 9 18-20" stroke="#2E7D32" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h3 class="text-xl font-bold text-slate-900">Application submitted</h3>
+      <p class="text-slate-600 text-sm mt-2 mb-4">
+        Thank you. Your <strong>auto-generated application form</strong> should open in a new tab — use <strong>Print → Save as PDF</strong>, then sign and submit with your documents.
+        We will contact you within <strong>7 working days</strong>.
+      </p>
+      <div class="bg-slate-50 rounded-xl py-3 px-4 mb-4">
+        <span class="text-xs text-slate-500 uppercase tracking-wide">Reference ID</span>
+        <p class="text-lg font-bold text-blue-900 font-mono" id="careersRef">CMS-CAREER-—</p>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-2 justify-center flex-wrap">
+        <button type="button" id="careersSuccessFormBtn" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800">
+          <i class="fas fa-download"></i> Download Application (PDF)
+        </button>
+        <a href="index.html" class="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50">Home</a>
+        <button type="button" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700" id="careersDoneBtn">Submit another application</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="text-center py-10 text-slate-500 text-sm border-t border-slate-200 bg-white">
+    <p>&copy; <span data-year>2026</span> Christ Mission School, Purnea, Bihar.</p>
+    <p class="mt-2"><a href="careers.html" class="text-blue-600 hover:underline">Back to careers overview</a></p>
+  </footer>
+
+  <script>
+    let currentStep = 1;
+    const totalSteps = 4;
+
+    function switchMode(mode) {
+      var onlineView = document.getElementById("view-online");
+      var offlineView = document.getElementById("view-offline");
+      var btnOnline = document.getElementById("btn-online");
+      var btnOffline = document.getElementById("btn-offline");
+      if (!onlineView || !offlineView) return;
+      if (mode === "online") {
+        onlineView.classList.remove("hidden");
+        offlineView.classList.add("hidden");
+        btnOnline.classList.add("border-blue-500");
+        btnOnline.classList.remove("border-transparent");
+        btnOffline.classList.remove("border-blue-500");
+        btnOffline.classList.add("border-transparent");
+      } else {
+        offlineView.classList.remove("hidden");
+        onlineView.classList.add("hidden");
+        btnOffline.classList.add("border-blue-500");
+        btnOffline.classList.remove("border-transparent");
+        btnOnline.classList.remove("border-blue-500");
+        btnOnline.classList.add("border-transparent");
+      }
+    }
+
+    function isTeachingRole() {
+      var sel = document.getElementById("c_position");
+      if (!sel) return false;
+      var v = sel.value;
+      return v === "Subject Teacher" || v === "Primary Class Teacher";
+    }
+
+    function toggleTeacherFields() {
+      var box = document.getElementById("teacherFields");
+      if (!box) return;
+      if (isTeachingRole()) box.classList.remove("hidden");
+      else box.classList.add("hidden");
+    }
+
+    function validateStep(step) {
+      var sec = document.getElementById("step-" + step);
+      if (!sec) return true;
+      var ok = true;
+      var reqRadio = sec.querySelector('input[type="radio"][required]');
+      if (reqRadio) {
+        var nm = reqRadio.name;
+        var group = sec.querySelectorAll('input[type="radio"][name="' + nm + '"]');
+        var anyChecked = Array.prototype.some.call(group, function (r) { return r.checked; });
+        if (!anyChecked) {
+          ok = false;
+          alert("Please select gender.");
+        }
+      }
+      var inputs = sec.querySelectorAll("[required]");
+      inputs.forEach(function (input) {
+        if (input.type === "radio") return;
+        if (input.type === "checkbox") {
+          if (!input.checked) {
+            input.classList.add("ring-2", "ring-red-400");
+            ok = false;
+          } else input.classList.remove("ring-2", "ring-red-400");
+          return;
+        }
+        if (input.type === "file") {
+          var upload = window.cmsCareersUpload;
+          if (upload && typeof upload.isLoading === "function" && upload.isLoading()) {
+            alert("Please wait — your résumé is still loading.");
+            ok = false;
+            return;
+          }
+          if (upload && typeof upload.isReady === "function" && upload.isReady()) {
+            input.classList.remove("ring-2", "ring-red-400");
+            return;
+          }
+          if (!input.files || !input.files.length) {
+            input.classList.add("ring-2", "ring-red-400");
+            ok = false;
+          } else input.classList.remove("ring-2", "ring-red-400");
+          return;
+        }
+        if (!(input.value || "").trim()) {
+          input.classList.add("ring-2", "ring-red-400");
+          ok = false;
+        } else input.classList.remove("ring-2", "ring-red-400");
+      });
+      if (step === 2 && isTeachingRole()) {
+        var sub = (document.getElementById("c_subject").value || "").trim();
+        if (!sub) {
+          alert("Please enter your subject / specialisation for this teaching role.");
+          ok = false;
+        }
+      }
+      return ok;
+    }
+
+    function changeStep(delta) {
+      if (delta === 1 && !validateStep(currentStep)) return;
+      var sections = document.querySelectorAll(".form-section");
+      sections[currentStep - 1].classList.remove("active");
+      currentStep += delta;
+      sections[currentStep - 1].classList.add("active");
+      updateUI();
+    }
+
+    function updateUI() {
+      for (var i = 1; i <= totalSteps; i++) {
+        var ind = document.getElementById("step-ind-" + i);
+        if (!ind) continue;
+        var circle = ind.querySelector("div.rounded-full");
+        if (i <= currentStep) {
+          ind.classList.remove("step-inactive");
+          circle.classList.remove("bg-slate-300");
+          circle.classList.add("bg-blue-600");
+        } else {
+          ind.classList.add("step-inactive");
+          circle.classList.remove("bg-blue-600");
+          circle.classList.add("bg-slate-300");
+        }
+      }
+      document.getElementById("prevBtn").classList.toggle("hidden", currentStep === 1);
+      document.getElementById("nextBtn").classList.toggle("hidden", currentStep === totalSteps);
+      document.getElementById("careersSubmitBtn").classList.toggle("hidden", currentStep !== totalSteps);
+      window.scrollTo({ top: 120, behavior: "smooth" });
+    }
+
+    toggleTeacherFields();
+  </script>
+  <script>
+    (function () {
+      var n = document.getElementById("careers_pay_name");
+      var e = document.getElementById("careers_pay_email");
+      var p = document.getElementById("careers_pay_phone");
+      var sn = document.getElementById("careersSumName");
+      var se = document.getElementById("careersSumEmail");
+      var sp = document.getElementById("careersSumPhone");
+      function sync() {
+        if (sn) sn.textContent = (n && n.value.trim()) || "—";
+        if (se) se.textContent = (e && e.value.trim()) || "—";
+        if (sp) sp.textContent = (p && p.value.trim()) || "—";
+      }
+      ["input", "change"].forEach(function (ev) {
+        if (n) n.addEventListener(ev, sync);
+        if (e) e.addEventListener(ev, sync);
+        if (p) p.addEventListener(ev, sync);
+      });
+      sync();
+    })();
+  </script>
+  <script src="cms-emblem-data.js" defer></script>
+  <script src="careers-receipt.js" defer></script>
+  <script src="careers-application-form.js" defer></script>
+  <script src="script.js" defer></script>
+  <script defer>
+    window.addEventListener("DOMContentLoaded", function () {
+      var btn = document.getElementById("careersDoneBtn");
+      if (!btn) return;
+      btn.addEventListener("click", function () {
+        if (typeof window.cmsDismissCareersOverlays === "function") window.cmsDismissCareersOverlays();
+        if (typeof window.cmsEnableCareersFormFields === "function") window.cmsEnableCareersFormFields();
+        window.setTimeout(function () {
+          if (typeof currentStep === "undefined") return;
+          currentStep = 1;
+          document.querySelectorAll(".form-section").forEach(function (s, idx) {
+            s.classList.toggle("active", idx === 0);
+          });
+          if (typeof updateUI === "function") updateUI();
+        }, 80);
+      });
+    });
+  </script>
+</body>
+</html>
