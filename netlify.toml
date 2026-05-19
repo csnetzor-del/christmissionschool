@@ -10,6 +10,15 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# Proxy /api/* to Render (edit URL to match your live Render service)
+[[redirects]]
+  from = "/api/*"
+  to = "https://christmissionschool.onrender.com/api/:splat"
+  status = 200
+  force = true
+
+# Do not send static files to Render — only /api/* above is proxied
+
 # Optional: force HTTPS on your custom domain
 [[headers]]
   for = "/*"

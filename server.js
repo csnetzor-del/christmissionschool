@@ -10,6 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const { createCareersApiRouter } = require('./careers-api');
 const { createAdmissionsApiRouter } = require('./admissions-api');
+const { createRazorpayApiRouter, isRazorpayConfigured } = require('./razorpay-api');
 
 // Middleware
 app.use(cors());
@@ -17,6 +18,12 @@ app.use(express.json({ limit: '12mb' }));
 app.use(express.urlencoded({ extended: true, limit: '12mb' }));
 app.use('/api/careers', createCareersApiRouter(express, __dirname));
 app.use('/api/admissions', createAdmissionsApiRouter(express, __dirname));
+app.use('/api/razorpay', createRazorpayApiRouter());
+
+app.get('/api/health', function (req, res) {
+    res.json({ ok: true, service: 'christ-mission-school-api' });
+});
+
 app.use(express.static(path.join(__dirname, './')));
 
 /**
@@ -65,12 +72,30 @@ app.post('/api/payment/initiate', (req, res) => {
 
     const transactionId = 'CMS' + Date.now();
 
+    if (!isRazorpayConfigured() && !isSibGatewayConfigured()) {
+        return res.json({
+            success: true,
+            demoMode: true,
+            transactionId,
+            message: 'Demo payment mode — configure Razorpay keys on the server.',
+        });
+    }
+
+    if (isRazorpayConfigured()) {
+        return res.json({
+            success: true,
+            useRazorpay: true,
+            demoMode: false,
+            message: 'Use Razorpay checkout (client calls /api/razorpay/create-order).',
+        });
+    }
+
     if (!isSibGatewayConfigured()) {
         return res.json({
             success: true,
             demoMode: true,
             transactionId,
-            message: 'Demo payment mode — bank gateway not configured.',
+            message: 'Demo payment mode — configure Razorpay keys on the server.',
         });
     }
 

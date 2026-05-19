@@ -955,82 +955,144 @@
       const processing = document.getElementById("payProcessing");
       const success = document.getElementById("paySuccess");
 
+      function completeAdmissionPayment(ref, method, paidAt, feeAmount) {
+        pending.payment.status = "Paid";
+        pending.payment.method = method;
+        pending.payment.reference = ref;
+        pending.payment.paidAt = paidAt;
+        pending.payment.amount = feeAmount;
+
+        const payRecord = {
+          id: "PAY-ADM-" + Date.now(),
+          amount: feeAmount,
+          currency: "INR",
+          method: method,
+          reference: ref,
+          paidAt: paidAt,
+          applicationId: pending.id,
+          purpose: "Admission Application Fee",
+          payerName: (pending.student && pending.student.fullName) || "",
+          payerEmail: (pending.father && pending.father.email) || (pending.mother && pending.mother.email) || "",
+          payerMobile: (pending.father && pending.father.mobile) || (pending.student && pending.student.mobile) || "",
+        };
+
+        const payList = loadAdmissionPayments();
+        payList.unshift(payRecord);
+        saveAdmissionPayments(payList);
+
+        syncAdmissionPaymentToServer(payRecord);
+        syncAdmissionApplicationToServer(pending);
+
+        var forLocal = Object.assign({}, pending, {
+          documents: admissionDocsForLocalStorage(pending.documents),
+        });
+        const list = loadAll();
+        list.unshift(forLocal);
+        saveAll(list);
+        sessionStorage.removeItem("cms_pending_submission");
+
+        processing.hidden = true;
+        document.getElementById("recRef").textContent = ref;
+        document.getElementById("recMethod").textContent = method;
+        document.getElementById("recAppId").textContent = pending.id;
+        var recAmt = document.getElementById("recAmountPaid");
+        if (recAmt) recAmt.textContent = fmtINR(feeAmount);
+        document.getElementById("recTime").textContent = fmtDate(paidAt);
+        try {
+          sessionStorage.setItem(
+            "cms_admission_last_fee_txn",
+            JSON.stringify({
+              reference: ref,
+              applicationId: pending.id,
+              method: method,
+              paidAt: paidAt,
+              amount: feeAmount,
+              studentName: (pending.student && pending.student.fullName) || "",
+              classApplying: (pending.student && pending.student.classApplying) || "",
+              parentName:
+                (pending.father && pending.father.name) ||
+                (pending.declaration && pending.declaration.name) ||
+                "",
+              parentMobile:
+                (pending.father && pending.father.mobile) ||
+                (pending.student && pending.student.mobile) ||
+                "",
+              parentEmail: (pending.father && pending.father.email) || (pending.mother && pending.mother.email) || "",
+            })
+          );
+        } catch (storeErr) {}
+        success.hidden = false;
+      }
+
+      function runDemoAdmissionPayment() {
+        const ref = "TXN-ADM-" + Date.now().toString().slice(-10) + Math.floor(Math.random() * 90 + 10);
+        completeAdmissionPayment(ref, activeMethod, new Date().toISOString(), Number((pending.payment && pending.payment.amount) || ADMISSION_FEE));
+      }
+
+      var payGatewayNote = document.getElementById("payGatewayNote");
+      if (payGatewayNote && window.CmsRazorpay) {
+        window.CmsRazorpay.fetchConfig().then(function (cfg) {
+          if (cfg.enabled) {
+            payGatewayNote.hidden = false;
+            payGatewayNote.textContent =
+              "Secure payment by Razorpay (UPI, cards, net banking, wallets).";
+          }
+        });
+      }
+
       payNow.addEventListener("click", function () {
-        if (!validateMethod()) return;
+        if (!window.CmsRazorpay) {
+          if (!validateMethod()) return;
+          processing.hidden = false;
+          setTimeout(runDemoAdmissionPayment, 1600);
+          return;
+        }
+
+        const feeAmount = Number((pending.payment && pending.payment.amount) || ADMISSION_FEE);
+        const payerEmail =
+          (pending.father && pending.father.email) ||
+          (pending.mother && pending.mother.email) ||
+          "";
+        const payerPhone =
+          (pending.father && pending.father.mobile) ||
+          (pending.student && pending.student.mobile) ||
+          "";
+        const payerName =
+          (pending.student && pending.student.fullName) ||
+          (pending.father && pending.father.name) ||
+          "";
+
         processing.hidden = false;
 
-        setTimeout(function () {
-          const ref = "TXN-ADM-" + Date.now().toString().slice(-10) + Math.floor(Math.random() * 90 + 10);
-          const paidAt = new Date().toISOString();
-          const feeAmount = Number((pending.payment && pending.payment.amount) || ADMISSION_FEE);
-
-          pending.payment.status = "Paid";
-          pending.payment.method = activeMethod;
-          pending.payment.reference = ref;
-          pending.payment.paidAt = paidAt;
-          pending.payment.amount = feeAmount;
-
-          const payRecord = {
-            id: "PAY-ADM-" + Date.now(),
-            amount: feeAmount,
-            currency: "INR",
-            method: activeMethod,
-            reference: ref,
-            paidAt: paidAt,
-            applicationId: pending.id,
-            purpose: "Admission Application Fee",
-            payerName: (pending.student && pending.student.fullName) || "",
-            payerEmail: (pending.father && pending.father.email) || (pending.mother && pending.mother.email) || "",
-            payerMobile: (pending.father && pending.father.mobile) || (pending.student && pending.student.mobile) || "",
-          };
-
-          const payList = loadAdmissionPayments();
-          payList.unshift(payRecord);
-          saveAdmissionPayments(payList);
-
-          syncAdmissionPaymentToServer(payRecord);
-          syncAdmissionApplicationToServer(pending);
-
-          var forLocal = Object.assign({}, pending, {
-            documents: admissionDocsForLocalStorage(pending.documents),
-          });
-          const list = loadAll();
-          list.unshift(forLocal);
-          saveAll(list);
-          sessionStorage.removeItem("cms_pending_submission");
-
-          processing.hidden = true;
-          document.getElementById("recRef").textContent = ref;
-          document.getElementById("recMethod").textContent = activeMethod;
-          document.getElementById("recAppId").textContent = pending.id;
-          var recAmt = document.getElementById("recAmountPaid");
-          if (recAmt) recAmt.textContent = fmtINR(feeAmount);
-          document.getElementById("recTime").textContent = fmtDate(paidAt);
-          try {
-            sessionStorage.setItem(
-              "cms_admission_last_fee_txn",
-              JSON.stringify({
-                reference: ref,
-                applicationId: pending.id,
-                method: activeMethod,
-                paidAt: paidAt,
-                amount: feeAmount,
-                studentName: (pending.student && pending.student.fullName) || "",
-                classApplying: (pending.student && pending.student.classApplying) || "",
-                parentName:
-                  (pending.father && pending.father.name) ||
-                  (pending.declaration && pending.declaration.name) ||
-                  "",
-                parentMobile:
-                  (pending.father && pending.father.mobile) ||
-                  (pending.student && pending.student.mobile) ||
-                  "",
-                parentEmail: (pending.father && pending.father.email) || (pending.mother && pending.mother.email) || "",
-              })
+        window.CmsRazorpay.openCheckout({
+          amount: feeAmount,
+          purpose: "Admission Application Fee",
+          receipt: pending.id,
+          notes: { applicationId: pending.id, type: "admission" },
+          name: payerName,
+          email: payerEmail,
+          contact: payerPhone,
+          onDemo: function () {
+            setTimeout(runDemoAdmissionPayment, 800);
+          },
+          onSuccess: function (meta) {
+            completeAdmissionPayment(
+              meta.reference,
+              meta.method || "Razorpay",
+              new Date().toISOString(),
+              feeAmount
             );
-          } catch (storeErr) {}
-          success.hidden = false;
-        }, 1600);
+          },
+          onFailure: function (msg) {
+            processing.hidden = true;
+            if (msg !== "cancelled") {
+              alert(msg || "Payment could not be completed. Please try again.");
+            }
+          },
+        }).catch(function (err) {
+          processing.hidden = true;
+          alert((err && err.message) || "Payment could not be started.");
+        });
       });
 
       // Handle return from SIB Gateway
@@ -1522,47 +1584,51 @@
           return;
         }
 
-        if (!validateCareersPayMethod()) return;
-
-        // Call our Node.js backend to initiate SIB payment
         if (careersProcessing) careersProcessing.hidden = false;
-        fetch('/api/payment/initiate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                amount: 100, // Careers fee
-                purpose: 'Careers Application Fee',
-                customerName: applicant.name,
-                customerEmail: applicant.email,
-                customerPhone: applicant.phone
-            })
-        })
-        .then(r => r.json())
-        .then(res => {
-            if (res.success && res.gatewayUrl) {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = res.gatewayUrl;
-                Object.keys(res.payload).forEach(key => {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = key;
-                    input.value = res.payload[key];
-                    form.appendChild(input);
-                });
-                document.body.appendChild(form);
-                form.submit();
-            } else {
-                throw new Error(res.message || 'Payment initiation failed');
-            }
-        })
-        .catch(function () {
-            if (!validateCareersPayMethod()) {
-              if (careersProcessing) careersProcessing.hidden = true;
-              return;
-            }
+
+        if (!window.CmsRazorpay) {
+          if (!validateCareersPayMethod()) {
+            if (careersProcessing) careersProcessing.hidden = true;
+            return;
+          }
+          runSimulatedCareersPayment(applicant);
+          return;
+        }
+
+        window.CmsRazorpay.openCheckout({
+          amount: 100,
+          purpose: "Careers Application Fee",
+          receipt: "careers_" + Date.now(),
+          notes: { type: "careers" },
+          name: applicant.name,
+          email: applicant.email,
+          contact: applicant.phone,
+          onDemo: function () {
             runSimulatedCareersPayment(applicant);
+          },
+          onSuccess: function (meta) {
+            finishCareersPayment(meta.method || "Razorpay", meta.reference, applicant);
+          },
+          onFailure: function (msg) {
+            if (careersProcessing) careersProcessing.hidden = true;
+            if (msg !== "cancelled") {
+              alert(msg || "Payment could not be completed. Please try again.");
+            }
+          },
+        }).catch(function (err) {
+          if (careersProcessing) careersProcessing.hidden = true;
+          alert((err && err.message) || "Payment could not be started.");
         });
+      });
+    }
+
+    if (gatewayNote && window.CmsRazorpay) {
+      window.CmsRazorpay.fetchConfig().then(function (rzCfg) {
+        if (rzCfg.enabled) {
+          gatewayNote.hidden = false;
+          gatewayNote.textContent =
+            "Secure payment by Razorpay (UPI, cards, net banking, wallets).";
+        }
       });
     }
 
@@ -1841,38 +1907,42 @@
       if (!validateDonation()) return;
       processing.hidden = false;
 
-      fetch("/api/payment/initiate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: amount,
-          purpose: document.getElementById("donor_purpose").value,
-          customerName: document.getElementById("donor_name").value.trim(),
-          customerEmail: document.getElementById("donor_email").value.trim(),
-          customerPhone: document.getElementById("donor_mobile").value.trim(),
-        }),
-      })
-        .then(function (r) {
-          if (!r.ok) throw new Error("Payment service unavailable");
-          return r.json();
-        })
-        .then(function (res) {
-          if (!res || !res.success) {
-            throw new Error((res && res.message) || "Payment failed");
+      var donorName = document.getElementById("donor_name").value.trim();
+      var donorEmail = document.getElementById("donor_email").value.trim();
+      var donorPhone = document.getElementById("donor_mobile").value.trim();
+      var purpose = document.getElementById("donor_purpose").value;
+
+      if (!window.CmsRazorpay) {
+        runSimulatedDonation();
+        return;
+      }
+
+      window.CmsRazorpay.openCheckout({
+        amount: amount,
+        purpose: "Donation — " + purpose,
+        receipt: "don_" + Date.now(),
+        notes: { type: "donation", purpose: purpose },
+        name: donorName,
+        email: donorEmail,
+        contact: donorPhone,
+        onDemo: function (res) {
+          runSimulatedDonation(res.transactionId ? String(res.transactionId) : null);
+        },
+        onSuccess: function (meta) {
+          var record = buildDonationRecord(meta.reference);
+          record.payment.method = meta.method || "Razorpay";
+          finishDonation(record);
+        },
+        onFailure: function (msg) {
+          processing.hidden = true;
+          if (msg !== "cancelled") {
+            alert(msg || "Payment could not be completed. Please try again.");
           }
-          if (res.demoMode) {
-            runSimulatedDonation(res.transactionId ? String(res.transactionId) : null);
-            return;
-          }
-          if (res.gatewayUrl && res.payload) {
-            redirectToSibGateway(res);
-            return;
-          }
-          throw new Error(res.message || "Payment failed");
-        })
-        .catch(function () {
-          runSimulatedDonation();
-        });
+        },
+      }).catch(function (err) {
+        processing.hidden = true;
+        alert((err && err.message) || "Payment could not be started.");
+      });
     });
 
     document.getElementById("printReceiptBtn").addEventListener("click", function () { window.print(); });
