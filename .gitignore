@@ -1,5 +1,4 @@
 node_modules/
-_redirects
 .env
 .env.local
 .env.*.local

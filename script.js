@@ -849,8 +849,8 @@
   /* ============================================================
      PAYMENT PAGE
      ============================================================ */
-  const payMethods = document.getElementById("payMethods");
-  if (payMethods) {
+  const payNowAdmission = document.getElementById("payNowBtn");
+  if (payNowAdmission && document.getElementById("sumName")) {
     const empty = document.getElementById("payEmpty");
     const grid = document.querySelector(".pay-grid");
     const rawPending = sessionStorage.getItem("cms_pending_submission");
@@ -858,25 +858,6 @@
     try {
       pending = rawPending ? JSON.parse(rawPending) : null;
     } catch (e) {}
-
-    const payMethodsRoot =
-      payMethods.closest(".pay-card--methods") ||
-      payMethods.closest(".pay-card") ||
-      payMethods.parentElement;
-    let activeMethod = "UPI";
-    payMethods.addEventListener("click", function (e) {
-      const btn = e.target.closest(".pay-method");
-      if (!btn) return;
-      activeMethod = btn.getAttribute("data-method");
-      payMethods.querySelectorAll(".pay-method").forEach(function (b) {
-        const on = b === btn;
-        b.classList.toggle("is-active", on);
-        b.setAttribute("aria-selected", String(on));
-      });
-      payMethodsRoot.querySelectorAll(".pay-panel").forEach(function (p) {
-        p.classList.toggle("is-active", p.getAttribute("data-panel") === activeMethod);
-      });
-    });
 
     if (!pending) {
       if (grid) grid.style.display = "none";
@@ -902,56 +883,7 @@
       );
       set("sumId", pending.id);
 
-      // Card number formatting
-      const cardNum = document.getElementById("card_number");
-      if (cardNum) {
-        cardNum.addEventListener("input", function () {
-          const digits = cardNum.value.replace(/\D/g, "").slice(0, 16);
-          cardNum.value = digits.replace(/(.{4})/g, "$1 ").trim();
-        });
-      }
-      const cardExp = document.getElementById("card_exp");
-      if (cardExp) {
-        cardExp.addEventListener("input", function () {
-          let v = cardExp.value.replace(/\D/g, "").slice(0, 4);
-          if (v.length >= 3) v = v.slice(0, 2) + "/" + v.slice(2);
-          cardExp.value = v;
-        });
-      }
-
-      function validateMethod() {
-        if (activeMethod === "UPI") {
-          const v = (document.getElementById("upi_id").value || "").trim();
-          if (!/^[\w.\-]{2,}@[A-Za-z]{2,}$/.test(v)) {
-            alert("Please enter a valid UPI ID (e.g. name@okhdfcbank).");
-            return false;
-          }
-        } else if (activeMethod === "Card") {
-          const num = (document.getElementById("card_number").value || "").replace(/\s+/g, "");
-          const name = (document.getElementById("card_name").value || "").trim();
-          const exp = (document.getElementById("card_exp").value || "").trim();
-          const cvv = (document.getElementById("card_cvv").value || "").trim();
-          if (name.length < 2) { alert("Please enter the cardholder name."); return false; }
-          if (!/^\d{15,16}$/.test(num)) { alert("Card number must be 15 or 16 digits."); return false; }
-          if (!/^\d{2}\/\d{2}$/.test(exp)) { alert("Expiry must be in MM/YY format."); return false; }
-          if (!/^\d{3,4}$/.test(cvv)) { alert("CVV must be 3 or 4 digits."); return false; }
-        } else if (activeMethod === "Net Banking") {
-          if (!document.getElementById("bank_select").value) {
-            alert("Please select your bank."); return false;
-          }
-        } else if (activeMethod === "Wallet") {
-          if (!document.getElementById("wallet_select").value) {
-            alert("Please select a wallet."); return false;
-          }
-          if (!/^\d{10}$/.test(document.getElementById("wallet_mobile").value || "")) {
-            alert("Enter a valid 10-digit mobile number."); return false;
-          }
-        }
-        return true;
-      }
-
-      // Pay now
-      const payNow = document.getElementById("payNowBtn");
+      const payNow = payNowAdmission;
       const processing = document.getElementById("payProcessing");
       const success = document.getElementById("paySuccess");
 
@@ -1026,7 +958,7 @@
 
       function runDemoAdmissionPayment() {
         const ref = "TXN-ADM-" + Date.now().toString().slice(-10) + Math.floor(Math.random() * 90 + 10);
-        completeAdmissionPayment(ref, activeMethod, new Date().toISOString(), Number((pending.payment && pending.payment.amount) || ADMISSION_FEE));
+        completeAdmissionPayment(ref, "Razorpay", new Date().toISOString(), Number((pending.payment && pending.payment.amount) || ADMISSION_FEE));
       }
 
       var payGatewayNote = document.getElementById("payGatewayNote");
@@ -1042,7 +974,6 @@
 
       payNow.addEventListener("click", function () {
         if (!window.CmsRazorpay) {
-          if (!validateMethod()) return;
           processing.hidden = false;
           setTimeout(runDemoAdmissionPayment, 1600);
           return;
@@ -1270,8 +1201,8 @@
   /* ============================================================
      CAREERS APPLICATION FEE PAYMENT PAGE (careers-payment.html)
      ============================================================ */
-  const careersPayMethods = document.getElementById("careersPayMethods");
-  if (careersPayMethods) {
+  const careersPayNowBtnEl = document.getElementById("careersPayNowBtn");
+  if (careersPayNowBtnEl) {
     const CAREERS_PAYMENTS_KEY = "cms_careers_payments_v1";
     const CAREERS_FEE_ACK = "cms_careers_fee_ack_v1";
     const cfg = Object.assign(
@@ -1327,90 +1258,9 @@
       return { name: name, email: email, phone: phone };
     }
 
-    var activeCareersMethod = "UPI";
-    var careersPayRoot =
-      careersPayMethods.closest(".pay-card--methods") ||
-      careersPayMethods.closest(".pay-card") ||
-      careersPayMethods.parentElement;
-    careersPayMethods.addEventListener("click", function (e) {
-      var btn = e.target.closest(".pay-method");
-      if (!btn) return;
-      activeCareersMethod = btn.getAttribute("data-method");
-      careersPayMethods.querySelectorAll(".pay-method").forEach(function (b) {
-        var on = b === btn;
-        b.classList.toggle("is-active", on);
-        b.setAttribute("aria-selected", String(on));
-      });
-      careersPayRoot.querySelectorAll(".pay-panel").forEach(function (p) {
-        p.classList.toggle("is-active", p.getAttribute("data-panel") === activeCareersMethod);
-      });
-    });
-
-    var cCardNum = document.getElementById("careers_card_number");
-    if (cCardNum) {
-      cCardNum.addEventListener("input", function () {
-        var digits = cCardNum.value.replace(/\D/g, "").slice(0, 16);
-        cCardNum.value = digits.replace(/(.{4})/g, "$1 ").trim();
-      });
-    }
-    var cCardExp = document.getElementById("careers_card_exp");
-    if (cCardExp) {
-      cCardExp.addEventListener("input", function () {
-        var v = cCardExp.value.replace(/\D/g, "").slice(0, 4);
-        if (v.length >= 3) v = v.slice(0, 2) + "/" + v.slice(2);
-        cCardExp.value = v;
-      });
-    }
-
-    function validateCareersPayMethod() {
-      if (activeCareersMethod === "UPI") {
-        var v = (document.getElementById("careers_upi_id").value || "").trim();
-        if (!/^[\w.\-]{2,}@[A-Za-z]{2,}$/.test(v)) {
-          alert("Please enter a valid UPI ID (e.g. name@okhdfcbank).");
-          return false;
-        }
-      } else if (activeCareersMethod === "Card") {
-        var num = (document.getElementById("careers_card_number").value || "").replace(/\s+/g, "");
-        var name = (document.getElementById("careers_card_name").value || "").trim();
-        var exp = (document.getElementById("careers_card_exp").value || "").trim();
-        var cvv = (document.getElementById("careers_card_cvv").value || "").trim();
-        if (name.length < 2) {
-          alert("Please enter the cardholder name.");
-          return false;
-        }
-        if (!/^\d{15,16}$/.test(num)) {
-          alert("Card number must be 15 or 16 digits.");
-          return false;
-        }
-        if (!/^\d{2}\/\d{2}$/.test(exp)) {
-          alert("Expiry must be in MM/YY format.");
-          return false;
-        }
-        if (!/^\d{3,4}$/.test(cvv)) {
-          alert("CVV must be 3 or 4 digits.");
-          return false;
-        }
-      } else if (activeCareersMethod === "Net Banking") {
-        if (!document.getElementById("careers_bank_select").value) {
-          alert("Please select your bank.");
-          return false;
-        }
-      } else if (activeCareersMethod === "Wallet") {
-        if (!document.getElementById("careers_wallet_select").value) {
-          alert("Please select a wallet.");
-          return false;
-        }
-        if (!/^\d{10}$/.test(document.getElementById("careers_wallet_mobile").value || "")) {
-          alert("Enter a valid 10-digit mobile number.");
-          return false;
-        }
-      }
-      return true;
-    }
-
     var careersProcessing = document.getElementById("careersPayProcessing");
     var careersSuccess = document.getElementById("careersPaySuccess");
-    var careersPayBtn = document.getElementById("careersPayNowBtn");
+    var careersPayBtn = careersPayNowBtnEl;
     var gatewayNote = document.getElementById("careersGatewayNote");
 
     if (cfg.careersPaymentLink && String(cfg.careersPaymentLink).indexOf("http") === 0) {
@@ -1490,14 +1340,14 @@
       revealCareersPaidWorkspace(txn && txn.applicant, txn);
     }
 
-    function finishCareersPayment(activeMethod, reference, applicant) {
+    function finishCareersPayment(paymentMethod, reference, applicant) {
       var paidAt = new Date().toISOString();
       var record = {
         id: "CMS-CPAY-" + Date.now().toString(36).toUpperCase(),
         purpose: "Careers application fee",
         amount: 100,
         currency: "INR",
-        method: activeMethod,
+        method: paymentMethod,
         reference: reference,
         paidAt: paidAt,
         applicant: applicant,
@@ -1517,7 +1367,7 @@
       var txnMeta = {
         paymentRecordId: record.id,
         reference: reference,
-        method: activeMethod,
+        method: paymentMethod,
         paidAt: paidAt,
         amount: record.amount,
         currency: record.currency || "INR",
@@ -1536,7 +1386,7 @@
       var recMethod = document.getElementById("careersRecMethod");
       var recTime = document.getElementById("careersRecTime");
       if (recRef) recRef.textContent = reference;
-      if (recMethod) recMethod.textContent = activeMethod;
+      if (recMethod) recMethod.textContent = paymentMethod;
       if (recTime) recTime.textContent = careersPayFmtDate(paidAt);
       if (careersSuccess) careersSuccess.hidden = false;
     }
@@ -1564,7 +1414,7 @@
       if (careersProcessing) careersProcessing.hidden = false;
       window.setTimeout(function () {
         var ref = "TXN-C-" + Date.now().toString().slice(-10) + Math.floor(Math.random() * 90 + 10);
-        finishCareersPayment(activeCareersMethod, ref, applicant);
+        finishCareersPayment("Razorpay", ref, applicant);
       }, 1400);
     }
 
@@ -1587,10 +1437,6 @@
         if (careersProcessing) careersProcessing.hidden = false;
 
         if (!window.CmsRazorpay) {
-          if (!validateCareersPayMethod()) {
-            if (careersProcessing) careersProcessing.hidden = true;
-            return;
-          }
           runSimulatedCareersPayment(applicant);
           return;
         }
@@ -1697,40 +1543,6 @@
       });
     }
 
-    /* Payment method tabs */
-    const donateMethods = document.getElementById("donatePayMethods");
-    let activeDonateMethod = "UPI";
-    donateMethods.addEventListener("click", function (e) {
-      const btn = e.target.closest(".pay-method");
-      if (!btn) return;
-      activeDonateMethod = btn.getAttribute("data-method");
-      donateMethods.querySelectorAll(".pay-method").forEach(function (b) {
-        const on = b === btn;
-        b.classList.toggle("is-active", on);
-        b.setAttribute("aria-selected", String(on));
-      });
-      donationForm.querySelectorAll(".pay-panel").forEach(function (p) {
-        p.classList.toggle("is-active", p.getAttribute("data-panel") === activeDonateMethod);
-      });
-    });
-
-    /* Card formatting */
-    const dnCardNum = document.getElementById("don_card_number");
-    if (dnCardNum) {
-      dnCardNum.addEventListener("input", function () {
-        const digits = dnCardNum.value.replace(/\D/g, "").slice(0, 16);
-        dnCardNum.value = digits.replace(/(.{4})/g, "$1 ").trim();
-      });
-    }
-    const dnCardExp = document.getElementById("don_card_exp");
-    if (dnCardExp) {
-      dnCardExp.addEventListener("input", function () {
-        let v = dnCardExp.value.replace(/\D/g, "").slice(0, 4);
-        if (v.length >= 3) v = v.slice(0, 2) + "/" + v.slice(2);
-        dnCardExp.value = v;
-      });
-    }
-
     /* Amount → words (Indian numbering, integer rupees) */
     function numberToWordsIN(n) {
       n = Math.floor(Number(n) || 0);
@@ -1783,29 +1595,6 @@
         alert("PAN looks invalid. Format: 5 letters + 4 digits + 1 letter (e.g. ABCDE1234F).");
         document.getElementById("donor_pan").focus(); return false;
       }
-      // Payment method specifics
-      if (activeDonateMethod === "UPI") {
-        const v = (document.getElementById("don_upi_id").value || "").trim();
-        if (!/^[\w.\-]{2,}@[A-Za-z]{2,}$/.test(v)) {
-          alert("Please enter a valid UPI ID (e.g. name@okhdfcbank)."); return false;
-        }
-      } else if (activeDonateMethod === "Card") {
-        const num = (document.getElementById("don_card_number").value || "").replace(/\s+/g, "");
-        const cardName = (document.getElementById("don_card_name").value || "").trim();
-        const exp = (document.getElementById("don_card_exp").value || "").trim();
-        const cvv = (document.getElementById("don_card_cvv").value || "").trim();
-        if (cardName.length < 2) { alert("Please enter the cardholder name."); return false; }
-        if (!/^\d{15,16}$/.test(num)) { alert("Card number must be 15 or 16 digits."); return false; }
-        if (!/^\d{2}\/\d{2}$/.test(exp)) { alert("Expiry must be in MM/YY format."); return false; }
-        if (!/^\d{3,4}$/.test(cvv)) { alert("CVV must be 3 or 4 digits."); return false; }
-      } else if (activeDonateMethod === "Net Banking") {
-        if (!document.getElementById("don_bank_select").value) { alert("Please select your bank."); return false; }
-      } else if (activeDonateMethod === "Wallet") {
-        if (!document.getElementById("don_wallet_select").value) { alert("Please select a wallet."); return false; }
-        if (!/^\d{10}$/.test(document.getElementById("don_wallet_mobile").value || "")) {
-          alert("Enter a valid 10-digit mobile number."); return false;
-        }
-      }
       return true;
     }
 
@@ -1844,7 +1633,7 @@
           pan: pan,
         },
         payment: {
-          method: activeDonateMethod,
+          method: "Razorpay",
           reference: txnRef,
         },
         createdAt: paidAt.toISOString(),

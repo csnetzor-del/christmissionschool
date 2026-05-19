@@ -262,26 +262,11 @@
           <div class="pay-field"><label for="careers_pay_phone">Mobile <span class="req">*</span></label><input type="tel" id="careers_pay_phone" inputmode="numeric" maxlength="10" autocomplete="tel" /></div>
         </div>
         <p class="pay-panel__lead" id="careersGatewayNote" hidden></p>
-        <div class="pay-methods" id="careersPayMethods" role="tablist">
-          <button type="button" class="pay-method is-active" data-method="UPI" role="tab" aria-selected="true"><span class="pay-method__label">UPI</span></button>
-          <button type="button" class="pay-method" data-method="Card" role="tab" aria-selected="false"><span class="pay-method__label">Card</span></button>
-          <button type="button" class="pay-method" data-method="Net Banking" role="tab" aria-selected="false"><span class="pay-method__label">Net Banking</span></button>
-          <button type="button" class="pay-method" data-method="Wallet" role="tab" aria-selected="false"><span class="pay-method__label">Wallet</span></button>
+        <div class="pay-razorpay-checkout">
+          <p class="pay-razorpay-checkout__lead">Click <strong>Pay ₹100 now</strong> to open Razorpay. Payment method and details are entered in the secure popup.</p>
+          <p class="pay-razorpay-checkout__brands">UPI · Cards · Net banking · Wallets</p>
         </div>
-        <div class="pay-panel is-active" data-panel="UPI"><div class="pay-field"><label for="careers_upi_id">UPI ID</label><input type="text" id="careers_upi_id" /></div></div>
-        <div class="pay-panel" data-panel="Card">
-          <div class="pay-field"><label for="careers_card_name">Cardholder</label><input type="text" id="careers_card_name" /></div>
-          <div class="pay-field"><label for="careers_card_number">Card number</label><input type="text" id="careers_card_number" inputmode="numeric" maxlength="19" /></div>
-          <div class="pay-grid-2">
-            <div class="pay-field"><label for="careers_card_exp">Expiry</label><input type="text" id="careers_card_exp" maxlength="5" placeholder="MM/YY" /></div>
-            <div class="pay-field"><label for="careers_card_cvv">CVV</label><input type="password" id="careers_card_cvv" maxlength="4" /></div>
-          </div>
-        </div>
-        <div class="pay-panel" data-panel="Net Banking"><div class="pay-field"><label for="careers_bank_select">Bank</label><select id="careers_bank_select"><option value="" disabled selected>Choose bank</option><option>State Bank of India</option><option>HDFC Bank</option><option>Other</option></select></div></div>
-        <div class="pay-panel" data-panel="Wallet">
-          <div class="pay-field"><label for="careers_wallet_select">Wallet</label><select id="careers_wallet_select"><option value="" disabled selected>Select</option><option>Paytm</option></select></div>
-          <div class="pay-field"><label for="careers_wallet_mobile">Mobile</label><input type="tel" id="careers_wallet_mobile" maxlength="10" /></div>
-        </div>
+
         <button type="button" class="pay-btn pay-btn--primary" id="careersPayNowBtn">PAY ₹100 NOW</button>
       </section>
       <aside class="pay-card pay-card--summary">
