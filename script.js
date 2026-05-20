@@ -3619,17 +3619,35 @@
       return r.dataUrl || "";
     }
 
+    function careersPaymentIdsInRecycleBin() {
+      const ids = {};
+      loadRecycleBin().forEach(function (item) {
+        if (item.type === "career_payment" && item.record && item.record.id) {
+          ids[item.record.id] = true;
+        }
+      });
+      return ids;
+    }
+
     function loadCareersPaymentsAdmin() {
-      if (careersServerPayments) return careersServerPayments.slice();
-      try {
-        return JSON.parse(localStorage.getItem(CAREERS_PAYMENTS_KEY_ADMIN)) || [];
-      } catch (e) {
-        return [];
+      let list;
+      if (careersServerPayments) list = careersServerPayments.slice();
+      else {
+        try {
+          list = JSON.parse(localStorage.getItem(CAREERS_PAYMENTS_KEY_ADMIN)) || [];
+        } catch (e) {
+          list = [];
+        }
       }
+      const recycled = careersPaymentIdsInRecycleBin();
+      return list.filter(function (p) {
+        return p && p.id && !recycled[p.id];
+      });
     }
     function saveCareersPaymentsAdmin(list) {
+      careersServerPayments = list.slice();
       try {
-        localStorage.setItem(CAREERS_PAYMENTS_KEY_ADMIN, JSON.stringify(list));
+        localStorage.setItem(CAREERS_PAYMENTS_KEY_ADMIN, JSON.stringify(careersServerPayments));
       } catch (e) {}
     }
     /** Match stored fee payment to an application (for older records without feePayment). */
@@ -3698,6 +3716,7 @@
         '<td>' + esc(ap.phone || "—") + "</td>" +
         '<td class="cell-actions">' +
         '<button type="button" class="btn-icon" title="View payment" data-careers-pay-action="view"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg></button>' +
+        '<button type="button" class="btn-icon btn-icon--danger" title="Move to Recycle Bin" data-careers-pay-action="delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m1 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h12z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
         "</td>" +
         "</tr>"
       );
@@ -4075,9 +4094,21 @@
         var row = e.target.closest("tr[data-pay-id]");
         if (!btn || !row) return;
         var payId = row.getAttribute("data-pay-id");
+        var action = btn.getAttribute("data-careers-pay-action");
         var allPay = loadCareersPaymentsAdmin();
         var p = allPay.find(function (x) { return x.id === payId; });
         if (!p) return;
+
+        if (action === "delete") {
+          if (!confirm("Move this careers fee payment to the Recycle Bin?")) return;
+          adminRecycleAdd("career_payment", p);
+          var remaining = allPay.filter(function (x) { return x.id !== payId; });
+          saveCareersPaymentsAdmin(remaining);
+          renderCareersFees();
+          switchToRecycleTab();
+          return;
+        }
+
         var ap = p.applicant || {};
         modalTitle.textContent = "Careers fee payment";
         modalSub.textContent = (p.id || "") + " · Paid " + fmtDate(p.paidAt);
@@ -4122,6 +4153,9 @@
       }
       if (item.type === "career_app") {
         return fetch("/api/careers/applications/" + encodeURIComponent(id), { method: "DELETE" }).catch(function () {});
+      }
+      if (item.type === "career_payment") {
+        return fetch("/api/careers/payments/" + encodeURIComponent(id), { method: "DELETE" }).catch(function () {});
       }
       return Promise.resolve();
     }
@@ -4203,20 +4237,45 @@
       if (idx < 0) return;
       const item = bin[idx];
       adminRecyclePurgeServer(item).finally(function () {
+        if (item.type === "career_payment" && item.record && item.record.id && careersServerPayments) {
+          careersServerPayments = careersServerPayments.filter(function (x) {
+            return x.id !== item.record.id;
+          });
+          try {
+            localStorage.setItem(CAREERS_PAYMENTS_KEY_ADMIN, JSON.stringify(careersServerPayments));
+          } catch (e) {}
+        }
         bin.splice(idx, 1);
         saveRecycleBin(bin);
         updateRecycleBadge();
         renderRecycleBin();
+        if (item.type === "career_payment") renderCareersFees();
       });
     }
 
     function adminRecyclePurgeAll() {
       const bin = loadRecycleBin();
       if (!bin.length) return;
+      const hadCareerPay = bin.some(function (item) { return item.type === "career_payment"; });
       Promise.all(bin.map(function (item) { return adminRecyclePurgeServer(item); })).finally(function () {
+        if (hadCareerPay && careersServerPayments) {
+          const purgedIds = {};
+          bin.forEach(function (item) {
+            if (item.type === "career_payment" && item.record && item.record.id) {
+              purgedIds[item.record.id] = true;
+            }
+          });
+          careersServerPayments = careersServerPayments.filter(function (x) {
+            return !purgedIds[x.id];
+          });
+          try {
+            localStorage.setItem(CAREERS_PAYMENTS_KEY_ADMIN, JSON.stringify(careersServerPayments));
+          } catch (e) {}
+        }
         saveRecycleBin([]);
         updateRecycleBadge();
         renderRecycleBin();
+        if (hadCareerPay) renderCareersFees();
       });
     }
 

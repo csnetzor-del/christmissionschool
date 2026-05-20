@@ -282,6 +282,15 @@ function createCareersApiRouter(express, dataRoot) {
     res.json({ success: true, paymentRecordId: payId, applicationId: applicationId, channel: channel });
   });
 
+  router.delete("/payments/:id", function (req, res) {
+    const id = req.params.id;
+    const list = readJson(PAY_FILE).filter(function (x) {
+      return x.id !== id;
+    });
+    writeJson(PAY_FILE, list);
+    res.json({ success: true });
+  });
+
   return router;
 }
 
