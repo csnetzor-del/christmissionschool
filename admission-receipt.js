@@ -333,7 +333,6 @@
       "</dl></div>" +
       '<div class="rcpt__sig">' +
       emblemSealBlock(logoDataUrl) +
-      '<span class="rcpt__sig-ack">Parent / guardian acknowledgement</span>' +
       "</div>" +
       "</article></div>" +
       '<footer class="rcpt__foot"><span>This is a computer-generated receipt. No physical signature is required.</span>' +
@@ -645,22 +644,6 @@
     );
 
     y += 4;
-    var sigH = 16;
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8);
-    doc.setTextColor(11, 27, 62);
-    doc.text("Christ Mission School", innerX, y + 5);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(7);
-    doc.setTextColor(90, 101, 132);
-    doc.text("Authorized online receipt", innerX, y + 10);
-    doc.setDrawColor(11, 27, 62);
-    doc.setLineWidth(0.25);
-    doc.line(innerX + innerW - 58, y + 11, innerX + innerW, y + 11);
-    doc.setFontSize(6.5);
-    doc.text("Parent / Guardian Signature", innerX + innerW - 29, y + 15, { align: "center" });
-
-    y += sigH;
     var footerH = 12;
     doc.setFillColor(244, 239, 227);
     doc.rect(cardX, y, cardW, footerH, "F");

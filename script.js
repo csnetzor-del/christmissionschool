@@ -1298,8 +1298,8 @@
         if (recEmail) recEmail.textContent = txn.applicant.email || "—";
         if (recPhone) recPhone.textContent = txn.applicant.phone || "—";
       }
-      if (global.CmsCareersReceipt && typeof global.CmsCareersReceipt.updatePanelEmblem === "function") {
-        global.CmsCareersReceipt.updatePanelEmblem();
+      if (window.CmsCareersReceipt && typeof window.CmsCareersReceipt.updatePanelEmblem === "function") {
+        window.CmsCareersReceipt.updatePanelEmblem();
       }
     }
 

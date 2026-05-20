@@ -378,8 +378,6 @@
       "</dl></div>" +
       '<div class="rcpt__sig">' +
       emblemSealBlock(logoDataUrl) +
-      '<span class="rcpt__sig-ack">Applicant acknowledgement</span>' +
-      "</div>" +
       "</div>" +
       '<footer class="rcpt__foot">Computer-generated receipt · Christ Mission School careers portal · Mirganj, Purnea</footer>' +
       "</article></div></body></html>"
